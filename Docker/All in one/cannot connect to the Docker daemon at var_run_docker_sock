@@ -1,0 +1,132 @@
+## cannot connect to the Docker daemon at unix:///var/run/docker.sock
+In this tutorial, we will fix one of the real time issue of the “cannot connect to the Docker daemon at unix:///var/run/docker.sock ” error and the ways to solve it.
+
+
+
+What is /var/run/docker.sock ?
+
+It is a Unix, when you run any docker command, the docker binary will try to connect to /var/run/docker.sock.
+
+As indicated by its .sock extension, this file is a Unix Domain Socket – basically, a way so multiple processes can communicate on the local computer 
+
+
+also called an IPC mechanism – IPC = “Inter-Process Communication”, which is used for exchanging the data between the processes.
+Any user who belongs to the Docker group should have access to /var/run/docker.sock for sharing the data between the processes.
+
+
+
+There are several ways to fix the error. If one solution doesn’t work for you, move on to the next method until you resolve the issue.
+
+
+
+### First Method : Check the Docker Daemon Running
+
+`docker ps`
+```
+Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+```
+`systemctl status docker`
+If the Docker Daemon isn’t running, start it with the following command 
+
+`systemctl start docker`
+
+If the Docker Daemon failed to start with above error the move to check second step
+
+### Second Method :  Make sure docker socket file exist with correct parameters 
+`rpm -ql docker-ce-20.10.13-3.el7.x86_64`
+```
+/usr/bin/docker-init
+
+/usr/bin/docker-proxy
+
+/usr/bin/dockerd
+
+/usr/lib/systemd/system/docker.service
+
+/usr/lib/systemd/system/docker.socket
+```
+`vi /usr/lib/systemd/system/docker.socket`
+
+`cat  /usr/lib/systemd/system/docker.socket`
+```
+[Unit]
+
+Description=Docker Socket for the API
+
+PartOf=docker.service
+
+ [Socket]
+
+ListenStream=/var/run/docker.sock
+
+SocketMode=0660
+
+SocketUser=root
+
+SocketGroup=docker
+
+ [Install]
+
+WantedBy=sockets.target
+```
+
+### Third  Method : Assign Ownership to the Docker Unix Socket
+
+The “cannot connect to the Docker daemon” error also happens if the Unix socket file for Docker doesn’t have the correct ownership assigned.
+
+1. Check ownership for the Docker Unix socket
+
+2. Add your user to the Docker group , if you don't have root access
+
+`ll /var/run/docker.sock`
+```
+srw-rw---- 1 root docker 0 Mar 14 15:27 /var/run/docker.sock
+```
+`usermod -a -G docker (user)`
+
+Now you can start Docker Daemon  with the following command 
+
+`systemctl start docker`
+```
+Failed to start docker.service: Unit is not loaded properly: Invalid argument.
+
+See system logs and 'systemctl status docker.service' for details.
+```
+`systemctl start docker.socket`
+```
+Failed to start docker.socket: Unit is not loaded properly: Invalid argument.
+```
+See system logs and 'systemctl status docker.socket' for details.
+
+If you face above  error while start docker daemon, then run below command to resolve issue 
+
+`systemctl daemon-reload`
+
+`systemctl start  docker`
+`systemctl status docker`
+```
+● docker.service - Docker Application Container Engine
+
+   Loaded: loaded (/usr/lib/systemd/system/docker.service; disabled; vendor preset: disabled)
+
+   Active: active (running) since Mon 2022-03-14 15:43:06 UTC; 4s ago
+
+     Docs: https://docs.docker.com
+
+ Main PID: 5295 (dockerd)
+
+    Tasks: 21
+
+   Memory: 48.9M
+
+   CGroup: /docker/4bc90ad3b709d6b9989067dec258feee0f1be7397152565f4786ca92cad5dd00/system.slice/docker.service
+
+           └─5295 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+
+ ```
+Validate by running
+
+`docker ps`
+```
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+```

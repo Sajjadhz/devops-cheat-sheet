@@ -1,0 +1,27 @@
+## Linux Remote Copy KodeKloud Engineer Task Success
+
+### Question :   
+One of the Nautilus developers has copied confidential data on the jump host in Stratos DC. That data must be copied to one of the app servers. Because developers do not have access to app servers, they asked the system admins team to accomplish the task for them.
+
+Copy /tmp/nautilus.txt.gpg file from jump server to App Server 3 at location /home/webdata.
+
+### Solution:  
+
+1. At first scp the file to stapp03 
+
+`ll /tmp/nautilus.txt.gpg`
+
+`sudo scp /tmp/nautilus.txt.gpg  banner@stapp03:/tmp/`
+
+2. Login on app server & switch to root user
+
+```
+sshpass -p BigGr33n ssh -o StrictHostKeyChecking=no banner@stapp03
+
+sudo su -
+```
+
+3. post copied, move file from /tmp location  to correct location ( /home/webdata/)
+
+`mv /tmp/nautilus.txt.gpg  /home/webdata/`
+`ll /home/webdata/`

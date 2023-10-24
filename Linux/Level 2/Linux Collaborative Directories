@@ -1,0 +1,61 @@
+## Linux Collaborative Directories
+
+### Question : 
+The Nautilus team doesn't want its data to be accessed by any of the other groups/teams due to security reasons and want their data to be strictly accessed by the devops group of the team.
+
+Setup a collaborative directory /devops/data on Nautilus App 1 server in Stratos Datacenter.
+
+The directory should be group owned by the group devops and the group should own the files inside the directory. The directory should be read/write/execute to the group owners, and others should not have any access.
+
+### Solution:  
+1. Login on   App server as per the task
+
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+
+2. Create folder according to the task & list to confirm
+
+`mkdir -p /devops/data`  
+
+`ll -lsd /devops/data/`
+```
+4 drwxr-xr-x 2 root root 4096 Jun 19 04:54 /devops/data/
+```
+3. Change group of the directory from root to mentioned group in task
+
+chgrp = changing primary group for the directory.
+
+-R = recursive . changes will reflect all sub-directories and files below.
+
+`chgrp -R devops /devops/data`
+
+`ll -lsd /devops/data/`
+```
+4 drwxr-xr-x 2 root devops 4096 Jun 19 04:54 /devops/data/
+```
+
+4. Change group of the directory from root to mentioned group in task
+
+chmod - modifying permission for sharedgrp.
+
+2770  - Giving full permission to user (root) & group users and zero permmision for other users.
+
+           2 - Special Permission. set group id.
+
+           7 -  4+2+1 = 7 (4= read, 2 = write, 1 = execute).User (root) Permission
+
+           7 -  4+2+1 = 7 (4= read, 2 = write, 1 = execute). Group Permission
+
+
+           0 - Other users.(zero permission).
+
+
+`chmod -R 2770 /devops/data`
+
+`ll -lsd /devops/data/`
+```
+4 drwxrws--- 2 root devops 4096 Jun 19 04:54 /devops/data/
+```

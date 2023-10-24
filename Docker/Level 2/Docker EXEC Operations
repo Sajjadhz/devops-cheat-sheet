@@ -1,0 +1,51 @@
+## Docker EXEC Operations
+
+### Question: 
+One of the Nautilus DevOps team members was working to configure services on a kkloud container that is running on App Server 2 in Stratos Datacenter. Due to some personal work he is on PTO for the rest of the week, but we need to finish his pending work ASAP. Please complete the remaining work as per the details given below:
+
+a. Install apache2 in kkloud container using apt that is running on App Server 2 in Stratos Datacenter.
+
+b. Configure Apache to listen on port 8085 instead of default http port. Do not bind it to listen on specific IP or hostname only, i.e it should listen on localhost, 127.0.0.1, container ip, etc.
+
+Solution:  
+
+
+ 1. At first login on app server as per the task &  switch to root user 
+
+ ```
+sshpass -p Am3ric@ ssh -o StrictHostKeyChecking=no steve@stapp02
+
+sudo su -
+```
+
+2. Run the Below command to check the existing docker container running 
+
+`docker ps`
+
+3. Login on docker container (ubuntu ) & install apache2
+
+`docker exec -it kkloud /bin/sh`
+```
+apt install apache2 -y
+cd /etc/apache2
+
+ls -l
+sed -i 's/Listen 80/Listen 5001/g' ports.conf
+
+sed -i 's/:80/:5001/g' apache2.conf
+
+sed -i 's/#ServerName www.example.com/ServerName localhost/g' apache2.conf
+
+service apache2 start
+
+ * Starting Apache httpd web server apache2 
+
+ AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 192.168.3.2. Set the 'ServerName' directive globally to suppress this message
+
+
+ *
+
+service apache2 status
+
+curl -Ik localhost:5001
+```

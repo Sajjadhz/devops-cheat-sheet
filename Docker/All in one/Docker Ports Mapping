@@ -1,0 +1,44 @@
+## Docker Ports Mapping
+
+### Question : 
+The Nautilus DevOps team is planning to host an application on a nginx-based container. There are number of tickets already been created for similar tasks. One of the tickets has been assigned to set up a nginx container on Application Server 2 in Stratos Datacenter. Please perform the task as per details mentioned below:
+
+a. Pull nginx:stable docker image on Application Server 2.
+
+b. Create a container named apps using the image you pulled.
+
+c. Map host port 8084 to container port 80. Please keep the container in running state.
+
+### Solution:  
+
+
+1. At first login on app server  ssh steve@stapp02
+
+2. Switch to  root user : sudo su -
+
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+
+3. Run Below command to check existing docker images 
+
+`docker images`
+
+4.  Pull Docker image  on server  
+
+`docker pull nginx:stable`
+
+5. Verify the pull image
+
+`docker images`
+
+6. Run below command to run container  
+`docker container run -d --name apps -p 8084:80 nginx:stable`
+
+7. Validate the task by below command and curl 
+
+`docker ps`
+
+`curl http://localhost:8084`

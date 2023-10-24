@@ -1,0 +1,70 @@
+## Linux Firewalld Rules Backup Server
+
+### Question:  
+The Nautilus system admins team recently deployed a web UI application for their backup utility running on the Nautilus backup server in Stratos Datacenter. The application is running on port 6200. They have firewalld installed on that server. The requirements that have come up include the following:
+
+Open all incoming connection on 6200/tcp port. Zone should be public Firewall on  Backup Server
+
+### Solution:  
+1. Login  to respective mentioned Backup server in task & switch to root
+
+```
+sshpass -p H@wk3y3 ssh -o StrictHostKeyChecking=no clint@stbkp01
+
+sudo su -
+```
+
+2.  1st check firewalld service status and existing rules for public zone
+
+
+`firewall-cmd --zone=public --list-all`
+
+3.  According to your task check the application port and add the below rule.
+    
+`firewall-cmd  --permanent --zone=public --add-port=6200/tcp`
+```
+success
+```
+
+4.  Reload the firewall rules & restart the firewall services.     
+
+`firewall-cmd --reload`
+```
+success
+```
+`systemctl restart firewalld`
+
+
+
+5.  Validate firewall rule implemented successfully as per the task request      
+
+`firewall-cmd --zone=public --list-all`
+```
+public
+
+  target: default
+
+  icmp-block-inversion: no
+
+  interfaces:
+
+  sources:
+
+  services: dhcpv6-client ssh
+
+  ports: 6200/tcp
+
+  protocols:
+
+  masquerade: no
+
+  forward-ports:
+
+  source-ports:
+
+  icmp-blocks:
+
+  rich rules:
+```
+
+

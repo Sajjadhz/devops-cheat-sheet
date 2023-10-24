@@ -1,0 +1,26 @@
+## Create Deployments in Kubernetes Cluster Devops
+
+### Question :   
+The Nautilus DevOps team has started practicing some pods, and services deployment on Kubernetes platform as they are planning to migrate most of their applications on Kubernetes platform. Recently one of the team members has been assigned a task to create a deploymnt as per details mentioned below:
+
+Create a deployment named nginx to deploy the application nginx using the image nginx: latest (remember to mention the tag as well) 
+
+### Solution:
+
+1. At first  kubectl  utility configure and working from jump server, run below commands  
+
+`kubectl get deploy`
+
+`kubectl get namespace`
+
+2.  Create deploy & and run image as per the task request
+
+`kubectl create deploy nginx --image nginx:latest`
+
+3.  Validate the task by running below commands
+
+`kubectl get deploy`
+
+`kubectl get pods`
+
+`kubectl describe pod nginx-55649fd747-8qq78`

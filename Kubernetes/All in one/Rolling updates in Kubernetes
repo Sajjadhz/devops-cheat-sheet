@@ -1,0 +1,32 @@
+## Rolling updates in Kubernetes
+
+### Question :   
+We have an application running on Kubernetes cluster using nginx web server. The Nautilus application development team has pushed some of the latest features to prod branch and those need be deployed. The Nautilus Devops team has created an image nginx:1.19 with latest changes.
+
+Perform a rolling update for this application and incorporate nginx:1.19 image. The deployment name is nginx-deployment
+
+Make sure all pods are up and running after the update.
+
+### Solution:  
+1. At first  check existing deployment and  pods running status   
+
+`kubectl get deploy`
+
+`kubectl get pods`
+
+2.  According the task set the  container image & deployment name
+
+`kubectl set image deployment nginx-deployment nginx-container=nginx:1.19`
+    
+3. wait for  deployment and  pods running status
+    
+`kubectl get pods`
+
+`kubectl get deploy`
+
+`kubectl get pods`
+    
+4. Check the rollout deployment status
+    
+`kubectl rollout status deployment nginx-deployment`
+                

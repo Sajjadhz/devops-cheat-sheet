@@ -1,0 +1,7 @@
+`git rebase feature dev`
+
+`git rebase --onto <newbase> <oldbase>`
+
+`git rebase <base>`
+
+`git rebase --interactive <base>`

@@ -1,0 +1,59 @@
+## Ansible Copy Module
+
+### Question : 
+There is data on jump host that needs to be copied on all application servers in Stratos DC. Nautilus DevOps team want to perform this task using Ansible only. Perform this task using Ansible as per details mentioned below:
+
+a. On jump host create an inventory file /home/thor/ansible/inventory and add all application servers as managed nodes.
+
+b. On jump host create a playbook /home/thor/ansible/playbook.yml to copy /usr/src/sysops/index.html file to all application servers at location /opt/sysops.
+
+Note: Validation will try to run playbook using command ansible-playbook -i inventory playbook.yml so please make sure playbook works this way, without passing any extra arguments.
+
+### Solution:  
+1. Go through the folder mentioned in the task and create inventory & playbook files    
+
+`cd  /home/thor/ansible/`
+`ll`
+
+2.  Create an inventory file and add the app servers as per task.
+
+
+`vi inventory`
+
+`cat inventory`
+```
+stapp01 ansible_host=172.16.238.10 ansible_ssh_pass=Ir0nM@n  ansible_user=tony
+
+stapp02 ansible_host=172.16.238.11 ansible_ssh_pass=Am3ric@  ansible_user=steve
+
+stapp03 ansible_host=172.16.238.12 ansible_ssh_pass=BigGr33n  ansible_user=banner
+```
+
+3.  Check the inventory file is working correctly by listing folder on all the app servers
+
+`ansible all -a "ls -ltr /opt/sysops" -i inventory`
+
+4. Create a playbook as per the task
+`vi playbook.yml`
+
+`cat playbook.yml`
+```
+- name: Ansible copy
+
+  hosts: all
+
+  become: yes
+
+  tasks:
+
+    - name: copy index.html to sysops folder
+
+      copy: src=/usr/src/sysops/index.html dest=/opt/sysops
+```
+5.Post file saved, run below command to execute the playbook 
+
+`ansible-playbook -i inventory playbook.yml`
+
+6. validate the task by running the below command
+      
+`ansible all -a "ls -ltr /opt/sysops" -i inventory`

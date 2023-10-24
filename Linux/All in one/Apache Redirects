@@ -1,0 +1,156 @@
+## Apache Redirects
+
+### Question: 
+The Nautilus devops team got some requirements related to some Apache config changes. They need to setup some redirects for some URLs. There might be some more changes need to be done. Below you can find more details regarding that:
+
+httpd is already installed on app server 2. Configure Apache to listen on port 5003.
+
+a.) Redirect http://stapp02.stratos.xfusioncorp.com:<Port>/ to http://www.stapp02.stratos.xfusioncorp.com:<Port>/ i.e non www to www. This must be a permanent redirect i.e 301
+
+b.) Redirect http://www.stapp02.stratos.xfusioncorp.com:<Port>/blog/ to http://www.stapp02.stratos.xfusioncorp.com:<Port>/news/. This must be a temporary redirect i.e 302.
+
+### Solution:  
+1. Login on   App server as per the task & switch to root user
+
+```
+sshpass -p Am3ric@ ssh -o StrictHostKeyChecking=no steve@stapp02
+
+sudo su -
+```
+
+2. Confirm the current httpd version & configuration 
+
+```
+pm -qa |grep httpd
+
+httpd-tools-2.4.6-90.el7.centos.x86_64
+
+httpd-2.4.6-90.el7.centos.x86_64
+
+at /etc/httpd/conf/httpd.conf |grep Listen
+
+# Listen: Allows you to bind Apache to specific IP addresses and/or
+
+# Change this to Listen on specific IP addresses as shown below to
+
+#Listen 12.34.56.78:80
+
+Listen 8080
+
+cat /etc/httpd/conf/httpd.conf |grep redirect
+# 1) plain text 2) local redirects 3) external redirects
+```
+3. Edit the configuration & change the port no as per the task 
+
+```
+vi /etc/httpd/conf/httpd.conf
+
+cat /etc/httpd/conf/httpd.conf |grep Listen
+
+# Listen: Allows you to bind Apache to specific IP addresses and/or
+
+# Change this to Listen on specific IP addresses as shown below to
+
+#Listen 12.34.56.78:80
+
+Listen 5003
+```
+
+4. As per the task we need to redirect permanent & temporary for which will create  main.conf 
+
+```ll /etc/httpd/conf.d/
+
+total 20
+
+-rw-r--r-- 1 root root 2926 Aug  8  2019 autoindex.conf
+
+-rw-r--r-- 1 root root 1252 Dec 17  2019 php.conf
+
+-rw-r--r-- 1 root root  366 Aug  8  2019 README
+
+-rw-r--r-- 1 root root 1252 Aug  6  2019 userdir.conf
+
+-rw-r--r-- 1 root root  824 Aug  6  2019 welcome.conf
+
+vi /etc/httpd/conf.d/main.conf
+
+cat  /etc/httpd/conf.d/main.conf
+
+<VirtualHost *:5003>
+
+ServerName stapp02.stratos.xfusioncorp.com
+
+Redirect 301 / http://www.stapp02.stratos.xfusioncorp.com:5003/
+
+</VirtualHost>
+
+ 
+
+<VirtualHost *:5003>
+
+ServerName www.stapp02.stratos.xfusioncorp.com:5003/blog/
+
+Redirect 302 /blog/ http://www.stapp02.stratos.xfusioncorp.com:5003/news/
+
+</VirtualHost>
+```
+
+5. Post file saved restart and check the httpd status 
+
+```systemctl restart httpd
+
+systemctl status  httpd
+```
+
+6. Validate the task by Curl 
+```
+curl http://stapp02.stratos.xfusioncorp.com:5003/
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+<html><head>
+
+<title>301 Moved Permanently</title>
+
+</head><body>
+
+<h1>Moved Permanently</h1>
+
+<p>The document has moved <a href="http://www.stapp02.stratos.xfusioncorp.com:5003/">here</a>.</p>
+
+</body></html>
+
+curl http://www.stapp02.stratos.xfusioncorp.com:5003
+
+Welcome to the Nautilus Group!
+
+[root@stapp02 ~]#
+
+curl http://www.stapp02.stratos.xfusioncorp.com:5003/blog/
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+<html><head>
+
+<title>302 Found</title>
+
+</head><body>
+
+<h1>Found</h1>
+
+<p>The document has moved <a href="http://www.stapp02.stratos.xfusioncorp.com:5003/news/">here</a>.</p>
+
+</body></html>
+
+
+
+curl http://www.stapp02.stratos.xfusioncorp.com:5003/news/
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+<html><head>
+
+<title>404 Not Found</title>
+
+</head><body>
+```

@@ -1,0 +1,56 @@
+## Linux Process Troubleshooting KodeKloud Engineer Task Success
+
+### Question:   
+The production support team of xFusionCorp Industries has deployed some of the latest monitoring tools to keep an eye on every service, application, etc. running on the systems. One of the monitoring systems reported about Apache service unavailability on one of the app servers in Stratos DC.
+
+
+Identify the faulty app host and fix the issue. Make sure Apache service is up and running on all app hosts. They might not hosted any code yet on these servers so you need not to worry about if Apache isn't serving any pages or not, just make sure service is up and running. Also, make sure Apache is running on port 8087 on all app servers.
+
+Solution:  
+1. At first identify the app server which has issue by running the below commands
+
+`telnet stapp01 8087`
+`telnet stapp02 8087`
+`telnet stapp03 8087`
+
+2. login on app server which has connection refuse error & switch to root  
+
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+
+3. Run the Below command to check the existing Apache HTTPd service     
+
+`systemctl start httpd`
+
+`systemctl status httpd`
+
+4. With the help of  netstat check which service is using your port and whats is PID. In below snipping ( refer to  below video for more details)
+
+`netstat -tulnp`
+```
+5. Confirm the PID as per  the netstat output 
+
+ps -ef  |grep sendmail
+
+root       615     1  0 14:52 ?        00:00:00 sendmail: accepting connections
+
+root       721   674  0 15:08 pts/0    00:00:00 grep --color=auto sendmail
+
+kill 615
+
+ps -ef  |grep sendmail
+```
+
+6.  Start the httpd service & check the status.
+       
+`systemctl start httpd`
+
+`systemctl status  httpd`
+
+7.  Validate Apache HTTPd running  as per the task request
+
+`telnet stapp01 8087`
+

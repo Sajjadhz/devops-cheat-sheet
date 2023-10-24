@@ -1,0 +1,64 @@
+## Git Merge Branches
+
+Question : The Nautilus application development team has been working on a project repository /opt/official.git. This repo is cloned at /usr/src/kodekloudrepos on storage server in Stratos DC. They recently shared the following requirements with DevOps team:
+
+a. Create a new branch devops in /usr/src/kodekloudrepos/official repo from master and copy the /tmp/index.html file (on storage server itself). Add/commit this file in the new branch and merge back that branch to the master branch. Finally, push the changes to origin for both of the branches.
+
+Solution:  
+1. At first login on to the storage server  & switch to the root user
+
+```
+sshpass -p Bl@kW ssh -o StrictHostKeyChecking=no natasha@ststor01
+
+sudo su -
+```
+
+2. Check repo  git status 
+
+
+`ll /usr/src/kodekloudrepos/official/`
+
+`git status`
+
+
+3. Create a new branch as per the task from the master repo
+
+`git checkout -b devops`
+
+`git status`
+
+4. Check  new branch status  & copy the index file 
+
+`git branch`
+
+* devops
+
+  master
+
+
+
+`cp /tmp/index.html  /usr/src/kodekloudrepos/official/`
+
+`ll /usr/src/kodekloudrepos/official/`
+
+5. Git add , Commit Index.html file 
+
+`git add index.html`
+
+`git commit -m "add official"`
+
+6. Git Checkout master & merge to new branch
+
+`git checkout master`
+
+`git merge devops`
+
+7. Git push to the branch as well master 
+
+
+`git push -u origin devops`
+
+
+`git push -u origin master`
+
+`git status`

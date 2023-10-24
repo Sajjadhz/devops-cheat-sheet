@@ -1,0 +1,87 @@
+## Install & Configure Web Application KodeKloud Engineer Task Success
+
+### Question :  
+xFusionCorp Industries is planning to host two static websites on their infra in Stratos Datacenter. The development of these websites is still in -progress, but we want to get the servers ready. The storage server has a shared directory /data that is mounted on each app host under /var/www/html directory. Please perform the following steps to accomplish the task:
+
+a. Install httpd package and dependencies on all app hosts.
+
+b. Apache should serve on port 8080 within the apps.
+
+c. There are two website's backups /home/thor/news and /home/thor/cluster on jump_host. Set them up on Apache in a way that news should work on link http://<<lb-url>>/ecommerce/ and cluster should work on link http://<<lb-url>>/cluster. (do not worry about load balancer configuration, as its already configured).
+
+d. You can access the website on LBR link; to do so click on the + button on top of your terminal, select the option Select port to view on Host 1, and after adding port 80 click on Display Port.
+
+
+
+### Solution:  
+1. At first login on app server  
+
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+
+2. Run Below command to install openssh service for copying scp files    
+
+`yum install  -y openssh-clients`
+
+3. Restart ssh service
+
+    `systemctl restart sshd`
+
+4. Now copy the two websites folder  from Jumpserver to  app server     
+
+`scp -r /home/thor/news tony@stapp01:/tmp`
+
+`scp -r /home/thor/cluster tony@stapp01:/tmp`
+
+6. Login back to app server (stapp01)  & install httpd     
+
+
+`yum install  -y httpd`
+
+7. Edit configuration file  `vi etc/httpd/conf/httpd.conf` & 
+
+change Listen port to 8080 
+
+
+cat /etc/httpd/conf/httpd.conf |grep Listen
+```
+# Listen: Allows you to bind Apache to specific IP addresses and/or
+
+# Change this to Listen on specific IP addresses as shown below to
+
+#Listen 12.34.56.78:80
+
+Listen 80
+
+vi /etc/httpd/conf/httpd.conf
+
+cat /etc/httpd/conf/httpd.conf |grep Listen
+
+# Listen: Allows you to bind Apache to specific IP addresses and/or
+
+# Change this to Listen on specific IP addresses as shown below to
+
+#Listen 12.34.56.78:80
+
+Listen 8080
+```
+
+8. Start & enable the httpd service below commands  
+
+`systemctl enable httpd && systemctl start httpd && systemctl status  httpd`
+
+9. Move  copied  folders  from tmp to /var/www/html folder
+
+
+`mv /tmp/news/  /var/www/html/`
+
+`mv /tmp/cluster/ /var/www/html/`
+
+10.  Validate the task by below command from Jumpserver    
+
+`curl http://stapp01:8080/news`
+
+`curl http://stapp01:8080/cluster`

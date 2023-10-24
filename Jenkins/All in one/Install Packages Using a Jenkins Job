@@ -1,0 +1,132 @@
+## Install Packages Using a Jenkins Job
+
+### Question : 
+Some new requirements have come up to install and configure some packages on the Nautilus infrastructure under Stratos Datacenter. The Nautilus DevOps team installed and configured a new Jenkins server so they wanted to create a Jenkins job to automate a task. Find below more details and complete the task accordingly:
+
+Click on the + button in the top left corner and select option Select port to view on Host 1, enter port 8081 and click on Display Port. You should be able to access the Jenkins login page. Login using username theadmin and Adm!n321 password.
+
+Create a Jenkins job named httpd-php and configure it to accomplish below given tasks.
+
+a. Install httpd (whatever version is available in the yum repo by default) and php-7.0 and along with their dependencies on All App servers under Stratos Datacenter.
+
+
+b. HTTPD should serve on port 5000 on All App servers.
+
+
+c. There is already an index.php file under Apache default document root and LB server is already configured. Click on the + button in the top left corner and select option Select port to view on Host 1, enter port 80 and click on Display Port. You should be able to access the php info page in the browser.
+
+Hint: As of right now no slave node has been added under Jenkins so you can simply accomplish the task using SSH within your job config.
+
+Note:
+
+You might need to install some plugins and restart Jenkins service. So, we recommend clicking on Restart Jenkins when installation is complete and no jobs are running on plugin installation/update page i.e update centre. Also some times Jenkins UI gets stuck when Jenkins service restarts in the back end so in such case please make sure to refresh the UI page.
+
+Make sure Jenkins job passes even on repetitive runs as validation may try to build the job multiple times.
+
+
+For these kind of scenarios requiring changes to be done in a web UI, please take screenshots so that you can share it with us for review in case your task is marked incomplete. You may also consider using a screen recording software such as loom.com to record and share your work.
+
+This task is based on web UI, you can refer below Video Solution for better understanding 
+
+
+
+### Solution:  
+
+1. Install SSH Plugin in Jenkins
+
+Select port to view on Host 1 and connect to port 8081. Login using the Jenkins admin user and password given in the question
+
+Under Jenkins > Manage Jenkins > Manage Plugins click Available and search for SSH plugin.
+
+
+
+Select the plugin and click Download now and install after restart 
+
+
+Click checkbox Restart Jenkins when installation is complete & refresh  the login screen 
+
+
+
+
+
+2. Add sudo users and their SSH credentials in Jenkins:
+
+You can try to refresh your browser after a few secs.
+
+Under Jenkins > Manage Jenkins > Manage Credentials, click Global under Stores scoped to Jenkins and Add Credentials
+
+
+Leave kind as Username with Password and Scope as Global (..)
+
+Setup credentials for tony@stapp01:
+```
+Username: tony
+
+Password: Ir0nM@n
+
+ID: stapp01
+```
+Repeat the step 2 to add steve for stapp02 and  banner for stapp03   
+
+3.  Add SSH Hosts in Jenkins
+
+Click Jenkins > Manage Jenkins > Configure System
+
+Under SSH Remote Hosts click Add Host and provide the following values:
+```
+Hostname: stapp01
+
+Port: 22
+
+Credentials: Choose 'tony' from the list
+
+Pty: Select checkbox
+
+Click Check Connection to make sure connection is successful
+```
+Repeat steps to add stapp02 and stapp03 hosts.
+
+
+
+4.  Create the Build Job
+
+Click New item:
+
+Name: httpd-php (Keep 'Freestyle Project' as selected) and click Ok
+
+Under Build add a Build Step with Execute shell script on remote host using SSH and under SSH Site select tony@stapp01:22
+
+
+In the command text area, provide the following. Make sure to update the HTTP Port as per your task and PHP version values (i.e. For installing PHP 7.1 then change the line  sudo yum-confing-manager repo enable
+
+
+
+```
+echo Ir0nM@n | sudo -S yum -y install epel-release yum-utils
+
+echo Ir0nM@n | sudo -S yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+
+echo Ir0nM@n | sudo -S yum-config-manager --enable remi-php71
+
+echo Ir0nM@n | sudo -S yum -y install php php-common php-opcache php-mcrypt php-cli php-gd php-curl php-mysqlnd httpd
+
+echo Ir0nM@n | sudo -S systemctl start httpd
+
+echo Ir0nM@n | sudo -S sed -i 's/^Listen 80$/Listen 6100/g' /etc/httpd/conf/httpd.conf
+
+echo Ir0nM@n | sudo -S systemctl reload httpd
+```
+Repeat the  commands for steve for stapp02  and  banner for stapp03 
+
+6. Post save , Run the build
+
+Click the newly created job, httpd-php on the home page and in the following screen click Build Now
+
+You should see a new build starting up on the left lower screen
+
+
+Click that build and click Console Output and search the log for any errors
+
+Wait until the build is completed successfully
+
+7. Validate the task 

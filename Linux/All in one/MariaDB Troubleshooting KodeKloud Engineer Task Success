@@ -1,0 +1,59 @@
+## MariaDB Troubleshooting KodeKloud Engineer Task Success
+
+### Question :   
+There is a critical issue going on with the Nautilus application in Stratos DC. The production support team identified that the application is unable to connect to the database. After digging into the issue, the team found that mariadb service is down on the database server.
+
+Look into the issue and fix the same.
+
+### Solution:  
+1. At first login on database server  &  Switch to  root user 
+
+```
+sshpass -p Sp!dy ssh -o StrictHostKeyChecking=no peter@stdb01
+
+sudo su -
+```
+
+3. When you start the mariadb service you will get below error 
+
+`systemctl status mariadb`
+```
+● mariadb.service - MariaDB database server
+
+   Loaded: loaded (/usr/lib/systemd/system/mariadb.service; disabled; vendor preset: disabled)
+
+   Active: inactive (dead)
+
+Jun 15 15:14:20 stdb01.stratos.xfusioncorp.com systemd[1]: Collecting mariadb.service
+```
+
+`systemctl start  mariadb`
+
+4. To know the detail error run status -l 
+
+`systemctl status mariadb -l`
+```
+● mariadb.service - MariaDB database server
+
+   Loaded: loaded (/usr/lib/systemd/system/mariadb.service; disabled; vendor preset: disabled)
+
+   Active: failed (Result: exit-code) since Tue 2021-06-15 15:14:32 UTC; 9s ago
+
+  Process: 734 ExecStartPre=/usr/libexec/mariadb-prepare-db-dir %n (code=exited, status=1/FAILURE)
+```
+5. List the  MY SQL following path check ownership, groups and directory name
+  
+`ll  /var/lib/`
+
+5. If the Ownership is correct check the folder name & rename accordingly 
+
+`mv /var/lib/mysqld/ /var/lib/mysql`
+
+`ll /var/lib/`
+
+6. Start service: systemctl start  mariadb &&  systemctl status  mariadb
+
+`systemctl start mariadb`
+
+`systemctl status  mariadb`
+

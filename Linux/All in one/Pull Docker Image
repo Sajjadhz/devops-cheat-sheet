@@ -1,0 +1,28 @@
+## Pull Docker Image
+
+### Question : 
+Nautilus project developers are planning to start testing on a new project. As per their meeting with the DevOps team, they want to test containerized environment application features. As per details shared with DevOps team, we need to accomplish the following task:
+
+a. Pull busybox:musl image on App Server 2 in Stratos DC and re-tag (create new tag) this image as busybox:blog.
+
+### Solution:  
+
+
+1. At first login on to app server &  Switch to root user
+```
+sshpass -p Am3ric@ ssh -o StrictHostKeyChecking=no steve@stapp02
+
+sudo su -
+```
+
+2. Run the Below command to check existing docker images 
+
+`docker images`
+3. Run the Below command to  pull the docker image on the server 
+`docker pull busybox:musl`
+
+4. Now retag ( create new tag ) as per the task  
+`docker image tag busybox:musl  busybox:blog`
+
+`docker images`
+

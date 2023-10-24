@@ -1,0 +1,36 @@
+### Here is an example of how to cherry-pick a commit:
+1. Make sure you are on the branch where you wants to add a new commit.(where you wants to add a new commit)
+`git switch main_branch`
+2. Use git log to find the commit hash of the commit:
+
+`git log`
+
+or
+
+`git log --oneline`  //for get 7 digits hash commit
+
+or
+
+//see commits to a specific branch(which branch commit you want to copy)
+`git log --oneline feature_branch`
+Copy the hash commit thats you want to cherry-pick
+
+3. Execute the following command:
+
+
+`git cherry-pick <commit-hash>`
+
+or
+
+`git cherry-pick feature_branch~2`
+
+### How to cherry-pick multiple commits:
+If you want to pick all the commits from commit A to c(where A is older than c) run:
+
+`git log --oneline`  //get 7 digits hash commit
+
+`git cherry-pick A^..C ` //pick all the commits from A to C (including A)
+If you need to exclude the first commit (Commit A in our case)
+
+//If you want to ignore A itself
+`git cherry-pick A..C`  //pick all the commits from B to C (exclude A)

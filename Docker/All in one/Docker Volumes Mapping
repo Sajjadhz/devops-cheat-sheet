@@ -1,0 +1,42 @@
+## Docker Volumes Mapping
+
+### Question : 
+The Nautilus DevOps team is testing applications containerization, which issupposed to be migrated on docker container-based environments soon. In today's stand-up meeting one of the team members has been assigned a task to create and test a docker container with certain requirements. Below are more details:
+
+a. On App Server 3 in Stratos DC pull ubuntu image (preferably latest tag but others should work too).
+
+b. Create a new container with name media from the image you just pulled.
+
+c. Map the host volume /opt/dba with container volume /var. There is an sample.txt file present on same server under /tmp; copy that file to /opt/dba. Also please keep the container in running state.
+
+### Solution:  
+
+
+ 1. At first login on app server  &  Switch to the root user 
+ ```
+sshpass -p BigGr33n ssh -o StrictHostKeyChecking=no banner@stapp03
+
+sudo su -
+```
+
+2. Run the Below command to check existing docker images 
+
+`docker images`
+
+ 3. Run the Below command to  pull the docker image on the server
+        
+`docker pull ubuntu:latest`
+
+4. copy file /tmp/sample.txt  to /opt dba
+
+`cp  /tmp/sample.txt  /opt/dba`
+
+5. Run docker container from the image with given name and path    
+
+`docker run --name media  -v /opt/dba:/var -d -it  ubuntu:latest`
+
+6. Validate the task by login on  docker container and list  /var  
+
+`docker ps`
+`docker exec -it 00aebc3928e3  /bin/bash`
+`ll /var`

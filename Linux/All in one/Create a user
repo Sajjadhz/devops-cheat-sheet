@@ -1,0 +1,3 @@
+## Create a user
+
+useradd -m -d /var/www/james -u 1198 james

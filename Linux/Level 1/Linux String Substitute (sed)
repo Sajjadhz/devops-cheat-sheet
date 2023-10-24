@@ -1,0 +1,276 @@
+## Linux String Substitute (sed)
+
+### Question :  
+There is some data on Nautilus App Server 3 in Stratos DC. Data needs to be altered in several of the files. On Nautilus App Server 3, alter the /home/BSD.txt file as per details given below:
+
+a. Delete all lines containing word software and save results in /home/BSD_DELETE.txt file. (Please be aware of case sensitivity)
+
+b. Replace all occurrence of word and to is and save results in /home/BSD_REPLACE.txt file.
+
+Note: Let's say you are asked to replace word to with from. In that case, make sure not to alter any words containing this string; for example upto, contributor etc.
+
+### Solution:  
+1. Login on   App server as per the task
+
+```
+sshpass -p BigGr33n ssh -o StrictHostKeyChecking=no banner@stapp03
+
+sudo su -
+```
+
+2. List the existing file and cat the word given in task which need to delete.
+
+```
+ll /home/
+
+total 20
+
+drwx------ 1 ansible ansible 4096 Oct 15  2019 ansible
+
+drwx------ 1 banner  banner  4096 Jan 25  2020 banner
+
+-rw-r--r-- 1 root    root    9919 Jun 27 12:27 BSD.txt
+
+cat /home/BSD.txt |grep software
+
+3. All advertising materials mentioning features or use of this software
+
+   This product includes software developed by the <organization>.
+
+   derived from this software without specific prior written permission.
+
+3. All advertising materials mentioning features or use of this software
+
+   This product includes software developed by the <organization>.
+
+   derived from this software without specific prior written permission.
+
+3. All advertising materials mentioning features or use of this software
+
+   This product includes software developed by the <organization>.
+
+   derived from this software without specific prior written permission.
+
+3. All advertising materials mentioning features or use of this software
+  This product includes software developed by the <organization>.
+
+   derived from this software without specific prior written permission.
+
+3. All advertising materials mentioning features or use of this software
+
+   This product includes software developed by the <organization>.
+
+   derived from this software without specific prior written permission.
+
+3. All advertising materials mentioning features or use of this software
+
+   This product includes software developed by the <organization>.
+
+   derived from this software without specific prior written permission.
+```
+
+Note :- As per the task, BSD.txt file should be intact. But using "sed -i" will change the file in place.So if you want to use "sed -i" , make the copy of the BSD.txt to respective files and do the changes on newly created files.
+
+Another option is which task required is just apply "sed" on original file and redirect the output to respective files. This won't affect the original place. As show below
+
+3. Delete all lines containing word software and save results in /home/BSD_DELETE.txt file
+
+```
+sed '/\<software\>/d' /home/BSD.txt > /home/BSD_DELETE.txt
+
+cat /home/BSD_DELETE.txt |grep software
+```
+
+
+ 
+
+4.  Cat the output for the word which going to replace 
+
+```
+cat /home/BSD.txt |grep and
+
+Redistribution and use in source and binary forms, with or without
+
+   notice, this list of conditions and the following disclaimer.
+
+   notice, this list of conditions and the following disclaimer in the
+
+   documentation and/or other materials provided with the distribution.
+
+Redistribution and use in source and binary forms, with or without
+
+   notice, this list of conditions and the following disclaimer.
+
+   notice, this list of conditions and the following disclaimer in the
+
+   documentation and/or other materials provided with the distribution.
+
+Redistribution and use in source and binary forms, with or without
+
+   notice, this list of conditions and the following disclaimer.
+
+   notice, this list of conditions and the following disclaimer in the
+
+   documentation and/or other materials provided with the distribution.
+
+Redistribution and use in source and binary forms, with or without
+
+   notice, this list of conditions and the following disclaimer.
+
+   notice, this list of conditions and the following disclaimer in the
+
+   documentation and/or other materials provided with the distribution.
+
+Redistribution and use in source and binary forms, with or without
+
+   notice, this list of conditions and the following disclaimer.
+
+   notice, this list of conditions and the following disclaimer in the
+
+   documentation and/or other materials provided with the distribution.
+
+Redistribution and use in source and binary forms, with or without
+
+   notice, this list of conditions and the following disclaimer.
+
+   notice, this list of conditions and the following disclaimer in the
+
+   documentation and/or other materials provided with the distribution.
+   ```
+
+
+
+5.  Now replace  all occurrence of word and redirect to new file
+
+
+`sed 's/\band\b/is/g' /home/BSD.txt > /home/BSD_REPLACE.txt`
+
+
+
+6.  Validate the word replaced successfully
+```
+cat /home/BSD_REPLACE.txt |grep and
+
+cat /home/BSD_REPLACE.txt |grep is
+
+Redistribution is use in source is binary forms, with or without
+
+1. Redistributions of source code must retain the above copyright
+
+   notice, this list of conditions is the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright
+
+   notice, this list of conditions is the following disclaimer in the
+
+   documentation is/or other materials provided with the distribution.
+
+3. All advertising materials mentioning features or use of this software
+
+   must display the following acknowledgement:
+
+   This product includes software developed by the <organization>.
+
+   derived from this software without specific prior written permission.
+
+Redistribution is use in source is binary forms, with or without
+
+1. Redistributions of source code must retain the above copyright
+
+   notice, this list of conditions is the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright
+
+   notice, this list of conditions is the following disclaimer in the
+
+   documentation is/or other materials provided with the distribution.
+
+3. All advertising materials mentioning features or use of this software
+
+   must display the following acknowledgement:
+
+   This product includes software developed by the <organization>.
+
+   derived from this software without specific prior written permission.
+
+Redistribution is use in source is binary forms, with or without
+
+1. Redistributions of source code must retain the above copyright
+
+   notice, this list of conditions is the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright
+
+   notice, this list of conditions is the following disclaimer in the
+
+   documentation is/or other materials provided with the distribution.
+
+3. All advertising materials mentioning features or use of this software
+
+   must display the following acknowledgement:
+
+   This product includes software developed by the <organization>.
+
+   derived from this software without specific prior written permission.
+
+Redistribution is use in source is binary forms, with or without
+
+1. Redistributions of source code must retain the above copyright
+
+   notice, this list of conditions is the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright
+
+   notice, this list of conditions is the following disclaimer in the
+
+   documentation is/or other materials provided with the distribution.
+
+3. All advertising materials mentioning features or use of this software
+
+   must display the following acknowledgement:
+
+   This product includes software developed by the <organization>.
+
+   derived from this software without specific prior written permission.
+
+Redistribution is use in source is binary forms, with or without
+
+1. Redistributions of source code must retain the above copyright
+
+   notice, this list of conditions is the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright
+
+   notice, this list of conditions is the following disclaimer in the
+
+   documentation is/or other materials provided with the distribution.
+
+3. All advertising materials mentioning features or use of this software
+
+   must display the following acknowledgement:
+
+   This product includes software developed by the <organization>.
+
+   derived from this software without specific prior written permission.
+
+Redistribution is use in source is binary forms, with or without
+
+1. Redistributions of source code must retain the above copyright
+
+   notice, this list of conditions is the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright
+
+   notice, this list of conditions is the following disclaimer in the
+
+   documentation is/or other materials provided with the distribution.
+
+3. All advertising materials mentioning features or use of this software
+
+   must display the following acknowledgement:
+
+   This product includes software developed by the <organization>.
+
+   derived from this software without specific prior written permission.
+```
+

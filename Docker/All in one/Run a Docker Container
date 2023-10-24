@@ -1,0 +1,38 @@
+## Run a Docker Container
+
+### Question: 
+Nautilus DevOps team is testing some applications deployment on some of the application servers. They need to deploy a nginx container on Application Server 1. Please complete the task as per details given below:
+
+On Application Server 1 create a container named nginx_1 using image nginx with alpine tag and make sure container is in running state.
+
+Solution:  
+
+
+ 1. At first login on app server as per the task &  switch to root user
+
+ ```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+
+2. Run the Below command to check the existing docker  Images & container  running 
+
+`docker ps`
+
+`docker images`
+
+3. According to the task pull the image and name the container make sure it's in running  
+
+
+`docker run -d --name nginx_1 -p 8080:80 nginx:alpine`
+
+4. Confirm the docker container is in running status 
+
+`docker ps`
+
+`docker images`
+
+5. Validate the task by Curl
+
+`curl http://localhost:8080`

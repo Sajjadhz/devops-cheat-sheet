@@ -1,0 +1,36 @@
+## Create a user with a specific ID & Home Directory KodeKloud Engineer Task
+
+### Question :  For security reasons the xFusionCorp Industries security team has decided to use custom Apache users for each web application hosted, rather than its default user. This will be theApache user, so it shouldn't use the default home directory. Create the user as per requirements given below:
+
+a. Create a user named yousuf on the App server 1 in Stratos Datacenter.
+
+b. Set UID to 1128 and its home directory to /var/www/yousuf.
+
+### Solution:  
+1. Login on app server as per the task &  Switch to root user 
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+
+2. Run the Below command to create a new user yousuf with UID
+
+```
+useradd -u 1128 yousuf
+
+id yousuf
+
+uid=1128(yousuf) gid=1128(yousuf) groups=1128(yousuf)
+cat /etc/passwd |grep yousuf
+
+yousuf:x:1128:1128::/home/yousuf:/bin/bash
+```
+
+3.  Post user creation run Below command to change user home directory.
+
+```
+usermod -d /var/www/yousuf -m yousuf
+cat /etc/passwd |grep yousuf
+yousuf:x:1128:1128::/var/www/yousuf:/bin/bash
+```

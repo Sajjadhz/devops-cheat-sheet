@@ -1,0 +1,48 @@
+## Puppet Multi-Packages Installation
+
+### Question : 
+Some new changes need to be made on some of the app servers in Stratos Datacenter. There are some packages that need to be installed on the app server 1. We want to install these packages using puppet only.
+
+Puppet master is already installed on Jump Server.
+
+Create a puppet programming file ecommerce.pp under /etc/puppetlabs/code/environments/production/manifests on master node i.e on Jump Server and perform below mentioned tasks using the same.
+
+Define a class multi_package_node for agent node 1 i.e app server 1. Install net-tools and unzip packages on the agent node 1.
+
+### Solution:
+
+1. Go through the folder mentioned in the task and create puppet files 
+cd /etc/puppetlabs/code/environments/production/manifests/
+
+vi ecommerce.pp
+
+```
+class multi_package_node {
+
+$multi_package = [ 'net-tools', 'unzip']
+
+    package { $multi_package: ensure => 'installed' }
+
+}
+
+ 
+
+node 'stapp01.stratos.xfusioncorp.com' {
+
+  include multi_package_node
+```
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+3. Run Puppet agent to pull the configuration from puppet server
+
+
+`puppet agen -tv`
+
+4. Validate the task by running
+
+
+`rpm -qa |grep -e net-tools -e unzip`
+

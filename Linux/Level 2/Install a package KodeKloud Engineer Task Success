@@ -1,0 +1,50 @@
+## Install a package KodeKloud Engineer Task Success
+
+### Question :  
+As per new application requirements shared by the Nautilus project development team, several new packages need to be installed on all app servers in Stratos Datacenter. Most of them are completed except for telnet.
+
+Therefore, install the zip package on all app-servers.
+
+### Solution:  
+1. At first login on App server  & Switch to  root user 
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+2. Run the Below command  to check &  install zip package       
+```
+rpm -qa |grep zip
+
+bzip2-libs-1.0.6-13.el7.x86_64
+
+gzip-1.5-10.el7.x86_64
+
+yum install zip -y
+```
+
+3. Validate the task by confirming
+```
+rpm -qa |grep zip
+
+bzip2-libs-1.0.6-13.el7.x86_64
+
+zip-3.0-11.el7.x86_64
+
+gzip-1.5-10.el7.x86_64
+```
+
+4. For  another app server without login you can execute the script
+
+`ssh -t steve@stapp02 "sudo yum install zip -y "`
+
+`ssh -t steve@stapp02 "sudo rpm -qa |grep zip "`
+
+5. Run the script for  stapp03 from jump server 
+
+`ssh -t banner@stapp03 "sudo yum install zip -y "`
+
+`ssh -t banner@stapp03 "sudo rpm -qa |grep zip "`
+
+
+

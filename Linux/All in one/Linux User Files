@@ -1,0 +1,28 @@
+## Linux User Files
+
+### Question :  
+There was some users data copied on Nautilus App Server 1 at /home/usersdata location by the Nautilus production support team in Stratos DC. Later they found that they mistakenly mixed up different user data there. Now they want to filter out some user data and copy it to another location. Find the details below:
+
+On App Server 1 find all files (not directories) owned by user kirsty inside /home/usersdata directory and copy them all while keeping the folder structure (preserve the directories path) to /media directory.
+
+### Solution:  
+1. At first login on App server   &  Switch to  root user
+
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+2. List the files and folders in the given folder path in task
+`ll /home/usersdata/`
+`ll /media/`
+
+[root@stapp01 ~]# `find /home/usersdata/ -type f -user kirsty |wc -l`
+
+3. As per the task find the files name by user & copy with folder structure 
+
+[root@stapp01 ~]# `find /home/usersdata/ -type f -user kirsty -exec cp --parents {} /media \;`
+
+4. List the files copied in the destination folder given in task
+
+`ll /media/home/usersdata/`

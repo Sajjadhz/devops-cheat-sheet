@@ -1,0 +1,16 @@
+## Write a Docker Compose File
+
+### 
+
+```
+---
+version: '3'
+services:
+  httpd:
+    image: httpd:latest
+    container_name: httpd
+    ports:
+      - "6300:80"
+    volumes:
+      - /opt/devops:/usr/local/apache2/htdocs
+```

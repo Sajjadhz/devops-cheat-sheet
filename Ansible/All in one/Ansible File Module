@@ -1,0 +1,54 @@
+## Ansible File Module
+
+### Question :  
+a. Create an inventory file ~/playbook/inventory on jump host and add all app servers in it.
+
+b. Create a playbook ~/playbook/playbook.yml to create a blank file /home/web.txt on all app servers.
+
+c. The /home/web.txt file permission must be 0755.
+
+d. The user/group owner of file /home/web.txt must be tony on app server 1, steve on app server 2 and banner on app server 3.
+
+### Solution:  
+1. Go through the folder mentioned in task and verified the playbook 
+
+    `ls -l /home/thor/playbook/`
+
+2.  Create a inventory file and add the app server's as per task.
+```
+stapp01 ansible_host=172.16.238.10 ansible_ssh_pass=Ir0nM@n  ansible_user=tony
+stapp02 ansible_host=172.16.238.11 ansible_ssh_pass=Am3ric@  ansible_user=steve
+stapp03 ansible_host=172.16.238.12 ansible_ssh_pass=BigGr33n     ansible_user=banner
+```
+3.  Create a playbook as per the task 
+```
+- name: Create file in appservers
+
+  hosts: stapp01, stapp02, stapp03
+
+  become: yes
+
+  tasks:
+
+    - name: Create the file and set properties
+
+      file:
+
+        path: /home/web.txt
+
+        owner: "{{ ansible_user }}"
+
+        group: "{{ ansible_user }}"
+
+        mode: "0755"
+
+
+        state: touch
+```
+
+4.Post file saved , run below command to execute the playbook
+
+        `ansible-playbook  -i inventory playbook.yml`
+
+6. validate the task by running the below command
+      `ansible all -a "ls -lsd /home/web.txt" -i inventory`

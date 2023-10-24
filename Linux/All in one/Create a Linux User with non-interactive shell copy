@@ -1,0 +1,46 @@
+## Create a Linux User with non-interactive shell
+
+### Question :  
+Create a Linux User with a non-interactive shell The System Admin Team of XfusionCorp Industries has installed a backup agent tool on all app servers. As per the tool's requirements, they need to create a user with a non-interactive shell. 
+
+In this article, we'll discuss a way to create new user with non-interactive shell using the useradd command.
+
+useradd may be a low level utility for adding users. On Debian, administrators should usually use adduser(8) instead.
+
+Most of them task got fail because of there's no bin file exist in path /bin/nologin
+
+For non interactive user you'll used 2 options below
+
+/sbin/nologin is specifically designed to switch a shell and produces output complaining you cannot log-in.
+where as /bin/false doesn't give output
+-s, --shell SHELL
+The name of a replacement user's login shell. this feature sets the SHELL variable in /etc/default/useradd.
+
+### Solution:  
+1. At first login to the respective mentioned server in the task. Mine is stapp02
+
+```
+sshpass -p Am3ric@ ssh -o StrictHostKeyChecking=no steve@stapp02
+
+sudo su -
+```
+
+2.  1st check user is existed on the server  by below command    
+
+`id ravi`
+
+3.  If the user is not found the then you create a user with a non-interactive shell    
+
+`adduser ravi  -s /sbin/nologin`
+
+4.  Validate user is created successfully as per the task request.      
+
+`id ravi`
+```
+uid=1002(ravi) gid=1002(ravi) groups=1002(ravi)
+```
+`cat /etc/passwd |grep ravi`
+```
+ravi:x:1002:1002::/home/ravi:/sbin/nologin
+
+```

@@ -1,0 +1,78 @@
+## Haproxy LBR Troubleshooting Linux Server KodeKloud Engineer Task
+
+### Question :  
+xFusionCorp Industries has an application running on Nautlitus infrastructure in Stratos Datacenter. The monitoring tool recognised that there is an issue with the haproxy service on LBR server. That needs to fixed to make the application work properly.
+
+Troubleshoot and fix the issue, and make sure haproxy service is running on Nautilus LBR server. 
+
+
+
+### Solution:  
+1. At first login to one of the App server  &  Switch to  root user
+```
+sshpass -p Mischi3f ssh -o StrictHostKeyChecking=no loki@stlb01
+
+sudo su -
+```
+
+2.  Verify the status of haproxy service 
+
+
+`systemctl status haproxy`
+
+4.  First validate the existing the haproxy config file using the below command     
+
+`haproxy -c -f /etc/haproxy/haproxy.cfg`
+```
+[ALERT] 186/072231 (109) : Proxy 'main': unable to find required default_backend: 'app'.
+
+[ALERT] 186/072231 (109) : Fatal errors found in configuration.
+```
+
+
+`cat /etc/haproxy/haproxy.cfg |grep app`
+```
+# Example configuration for a possible web application.  See the
+
+    default_backend             app
+
+#backend app
+
+    server  app1 127.0.0.1:5001 check
+
+    server  app2 127.0.0.1:5002 check
+    server  app3 127.0.0.1:5003 check
+
+    server  app4 127.0.0.1:5004 check
+```
+5.  Correct the typo error in the file haproxy.cfg  
+
+`vi /etc/haproxy/haproxy.cfg`
+
+`cat /etc/haproxy/haproxy.cfg |grep app`
+```
+# Example configuration for a possible web application.  See the
+
+    default_backend             app
+
+backend app
+
+    server  app1 127.0.0.1:5001 check
+
+    server  app2 127.0.0.1:5002 check
+
+    server  app3 127.0.0.1:5003 check
+
+    server  app4 127.0.0.1:5004 check
+```
+6.   After changes  validate the existing the haproxy config file
+    
+`haproxy -c -f /etc/haproxy/haproxy.cfg`
+```
+Configuration file is valid
+```
+7.  Start service &   Check service status
+
+`systemctl start haproxy`
+`systemctl status haproxy`
+

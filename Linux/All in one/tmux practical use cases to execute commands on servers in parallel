@@ -1,0 +1,70 @@
+## tmux practical use cases to execute commands on servers in parallel
+
+1. To Start a new session
+    :new
+2. To Show all sessions
+    tmux ls
+
+    tmux list-sessions
+
+    Ctrl + b s
+3. To Attach Sessions
+
+    tmux a -t mysession
+    tmux at -t mysession
+
+    tmux attach -t mysession
+4. To kill / delete Sessions
+    tmux kill-ses -t mysession
+
+    tmux kill-session -t mysession
+
+
+PANES 
+1. Toggle last active pane
+
+    Ctrl + b ;
+
+2.Split pane horizontally
+
+    Ctrl + b %
+
+3. Split pane vertically
+
+    Ctrl + b "
+4. Move the current pane left
+
+    Ctrl + b {
+
+5., Move the current pane right
+
+    Ctrl + b }
+
+6. Switch to pane to the direction
+
+    Ctrl + b Ý   
+
+            
+    Ctrl + b ß
+
+7. Resize current pane height(holding second key is optional)
+
+    Ctrl + b Ý   
+
+            
+    Ctrl + b ß
+
+8. Toggle synchronize-panes (send command to all panes) 
+
+    Ctrl + b 
+    : setw synchronize-panes
+
+9. Close current pane
+
+    Ctrl + b x
+
+10. For More information about session, window, pane. 
+    tmux info
+
+
+

@@ -1,0 +1,90 @@
+## Creating Soft Links Using Ansible
+
+ ### Question : 
+ Create a playbook.yml under /home/thor/ansible on jump host; an inventory file is already present under /home/thor/ansible directory on jump host itself.
+
+Create an empty file /opt/itadmin/blog.txt on app server 1; its user owner and group owner should be tony. Create a symbolic link of source path /opt/itadmin to destination /var/www/html.
+
+Create an empty file /opt/itadmin/story.txt on app server 2; its user owner and group owner should be steve. Create a symbolic link of source path /opt/itadmin to destination /var/www/html.
+
+Create an empty file /opt/itadmin/media.txt on app server 3; its user owner and group owner should be banner. Create a symbolic link of source path /opt/itadmin to destination /var/www/html.
+
+Note: Validation will try to run playbook using command ansible-playbook -i inventory playbook.yml so please make sure playbook works this way, without passing any extra arguments.
+### Solution:  
+1. At first ansible inventory file is working properly and doesn't have any file exist from jump server to all the app server's
+
+      `ansible all -a "ls -ltr /opt/itadmin" -i inventory`
+
+2. If you see above output then create playbook file 
+
+       `vi /home/thor/ansible/playbook.yml` 
+```
+- name: Create text files and create soft link
+
+  hosts: stapp01, stapp02, stapp03
+
+  become: yes
+
+  tasks:
+
+    - name: Create the blog.txt on stapp01
+
+      file:
+
+        path: /opt/itadmin/blog.txt
+
+        owner: tony
+
+        group: tony
+
+        state: touch
+
+      when: inventory_hostname == "stapp01"
+
+    - name: Create the story.txt on stapp02
+
+      file:
+
+        path: /opt/itadmin/story.txt
+
+        owner: steve
+
+        group: steve
+
+        state: touch
+
+      when: inventory_hostname == "stapp02"
+
+    - name: Create the media.txt on stapp03
+
+      file:
+
+        path: /opt/itadmin/media.txt
+
+        owner: banner
+
+        group: banner
+
+        state: touch
+
+      when: inventory_hostname == "stapp03"
+
+    - name: Link /opt/itadmin directory
+
+      file:
+
+        src: /opt/itadmin/
+
+        dest: /var/www/html
+
+        state: link
+```
+
+
+3.  Post file saved , run below command to execute the playbook
+
+        `ansible-playbook  -i inventory playbook.yml`
+
+4.  Validate the task by below command 
+
+      `ansible all -a "ls -ltr /opt/itadmin" -i inventory`

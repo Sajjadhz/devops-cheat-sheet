@@ -1,0 +1,32 @@
+## Setup Puppet Certs
+
+### Question : 
+Puppet master is running on jump host itself (also note that Puppet master node is also running as Puppet CA server) and Puppet agent is running on App Server 1. Since it is a fresh set up, the team wants to sign certificates for puppet master as well as puppet agent nodes so that they can proceed with the next steps of set up. You can find more details about the task below:
+
+Puppet server and agent nodes are already have required packages, but you may need to start puppetserver (on master) and puppet service on both nodes.
+
+Assign and sign certificates for both master and agent node.
+
+### Solution:  
+
+
+ 1. As per the Hint check Hosts file on jumpserver and add the alias 
+
+    `vi /etc/hosts`
+2. Now login on app server
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+
+```
+3.  Edit Hosts file and add the puppet server ( Jumpserver )  & on App Server
+
+    'vi /etc/hosts'
+
+4.  Restart the  puppet service on App server
+```
+systemctl start puppet
+systemctl status puppet
+```
+5.  Sign certificate on puppet server 

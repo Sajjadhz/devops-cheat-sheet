@@ -1,0 +1,85 @@
+## Jenkins Install Packages Kodekloud | Add string parameter named PACKAGE
+
+### Question :  
+Some new requirements have come up to install and configure some packages on the Nautilus infrastructure under Stratos Datacenter. The Nautilus DevOps team installed and configured a new Jenkins server so they wanted to create a Jenkins job to automate this task. Find below more details and complete the task accordingly:
+
+Click on the Jenkins button on the top bar to access the Jenkins UI. Login using username admin and Adm!n321 password.
+
+Create a Jenkins job named install-packages and configure it to accomplish below given tasks.
+
+Add a string parameter named PACKAGE.
+
+Configure it to install a package on the storage server in Stratos Datacenter provided to the $PACKAGE parameter.
+
+Note:
+
+1. You might need to install some plugins and restart Jenkins service. So, we recommend clicking on Restart Jenkins when installation is complete and no jobs are running on plugin installation/update page i.e update centre. Also some times Jenkins UI gets stuck when Jenkins service restarts in the back end so in such case please make sure to refresh the UI page.
+
+2. Make sure Jenkins job passes even on repetitive runs as validation may try to build the job multiple times.
+
+
+3. For these kind of scenarios requiring changes to be done in a web UI, please take screenshots so that you can share it with us for review in case your task is marked incomplete. You may also consider using a screen recording software such as loom.com to record and share your work.
+
+### Solution:  
+
+1. Prerequisite  for this task  is to Install SSH Plugin 
+
+Click on the Jenkins button on the top bar. Login using the Jenkins admin user and password given in the question
+
+Under Jenkins > Manage Jenkins > Manage Plugins click Available and search for SSH plugin.
+
+Select the plugin and click  Install without restart 
+
+Click checkbox Restart Jenkins when installation is complete & refresh  the login screen 
+
+Note : Ignore SSH failure error. You can try to refresh your browser after reboot a few secs.
+
+2. Create SSH credentials in Jenkins:
+
+Under Jenkins > Manage Jenkins > Manage Credentials, click Global under Stores scoped to Jenkins and Add Credentials
+
+Setup credentials for 
+```
+Username: natasha
+
+Password: Bl@kW
+
+ID: storage
+```
+
+3.  Add SSH Hosts in Jenkins
+
+Click Jenkins > Manage Jenkins > Configure System
+
+Under SSH Remote Hosts click Add Host and provide the following values:
+```
+Hostname: ststor01.stratos.xfusioncorp.com
+
+Port: 22
+
+Credentials: Choose natasha from the list
+
+Click Check Connection to make sure connection is successful
+```
+
+4.  Create the Build Job
+
+Click New item and in the following screen:
+
+Name: install-packages (Keep 'Freestyle Project' as selected) and click Ok
+
+Under Build Configuration This project is parameterized  >  String Parameter
+
+Add a string parameter named PACKAGE
+
+Default Value - package install name 
+
+Under Build add a Build Step with Execute shell script on remote host using SSH and under SSH Site select natasha@ststor01.stratos.xfusioncorp.com:22
+
+In the command text area, provide the following. 
+
+```
+echo 'Bl@kW' | sudo -S yum install -y $PACKAGE
+```
+
+5. Post save , Run the build

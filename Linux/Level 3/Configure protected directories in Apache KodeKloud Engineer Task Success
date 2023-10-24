@@ -1,0 +1,72 @@
+## Configure protected directories in Apache KodeKloud Engineer Task Success
+
+### Question : 
+
+1.  Create /var/www/html/dba direcotry if doesn't exist.
+
+2.  Add a user kirsty in htpasswd and set its password to 8FmzjvFU6S.
+
+3. There is a file /tmp/index.html placed on Jump Server. Copy the same to new directory you created, please make sure default document root should remain /var/www/html. Also website should work on URL http://<app-server-hostname>:<port>/dba
+
+Solution:  
+1. At first  copy the index file from jump server to app server
+
+    scp /tmp/index.html banner@stapp03:/tmp
+
+2.  Login on app server  
+
+```
+sshpass -p BigGr33n ssh -o StrictHostKeyChecking=no banner@stapp03
+
+sudo su -
+```
+
+3. Run Below command to check the existing Apache httpd service status 
+
+     `systemctl status httpd`
+
+4. Create /var/www/html/dba directory (Please refer your task)
+
+    `mkdir /var/www/html/dba`
+
+
+5. Add a user and set password as per given in your task 
+
+    `htpasswd -c /etc/httpd/.htpasswd  kirsty`
+
+
+
+
+6. create .htaccess file under dba directory ( refer Video below )
+
+    `vi  /var/www/html/dba/.htaccess`
+
+    Add below in configuration file 
+```
+    AuthType Basic
+
+    AuthName "Password Required"
+
+    Require valid-user
+
+    AuthUserFile /etc/httpd/.htpasswd
+```
+
+
+7. Move the copied index.html file under dba directory 
+    `mv /tmp/index.html  /var/www/html/dba/`
+
+
+
+8. Post saved config file , start  & check the httpd services status
+
+`systemctl start httpd && systemctl status httpd`
+
+
+
+
+
+9.  Validate Apache httpd running  as per the task request user and password
+
+ `curl -u kirsty http://stapp03:8080/dba`
+

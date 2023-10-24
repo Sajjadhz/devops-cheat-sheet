@@ -1,0 +1,58 @@
+## Puppet Setup File Permissions
+Question:  Create a Puppet programming file blog.pp under /etc/puppetlabs/code/environments/production/manifests directory on master node i.e Jump Server. Using puppet file resource, perform the below mentioned tasks.
+
+File beta.txt already exists under /opt/finance directory on App Server 3.
+
+Add content Welcome to xFusionCorp Industries! in file beta.txt on App Server 3.
+
+Set permissions 0744 for file beta.txt on App Server 3.
+
+Note: Please perform this task using blog.pp only, do not create any separate inventory file.
+
+1. Go through the folder mentioned in task and create puppet file 
+
+    `vi /etc/puppetlabs/code/environments/production/manifests/blog.pp`
+
+
+
+2. Puppet user resource add a user on all app servers as mentioned in your task
+
+```
+class file_modifier {
+
+   # Update beta.txt under /opt/finance
+
+   file { '/opt/finance/beta.txt':
+
+     ensure => 'present',
+
+     content => 'Welcome to xFusionCorp Industries!',
+
+     mode => '0744',
+
+   }
+
+ }
+
+ node 'stapp03.stratos.xfusioncorp.com' {
+
+   include file_modifier
+
+ }
+```
+3. Validate the puppet file by below command.   
+
+
+`puppet parser validate blog.pp`
+
+4. Login on  App server as per the task and run command   
+```
+sshpass -p BigGr33n ssh -o StrictHostKeyChecking=no banner@stapp03
+
+sudo su -
+
+puppet agent -tv
+```
+5.. Validate the task by running 
+
+`cat /opt/finance/beta.txt`

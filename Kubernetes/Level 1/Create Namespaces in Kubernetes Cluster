@@ -1,0 +1,30 @@
+## Create Namespaces in Kubernetes Cluster
+
+### Question : 
+The Nautilus DevOps team is planning to deploy some micro service on Kubernetes platform. The team has already set up a Kubernetes cluster and now they want to set up some namespaces, deployments etc. Based on the current requirements the team has shared the details below:
+
+Create a namespace named dev and create a POD under it; name the pod dev-nginx-pod and use nginx image with latest tag only and remember to mention tag i.e nginx:latest.
+
+Note: The kubectl utility on jump_host has been configured to work with the kubernetes cluster.
+
+### Solution:  
+1. At first  kubectl  utility configure and working from jump server, run below commands
+
+    `kubectl get namespace`
+
+    `kubectl get pods`
+
+
+2. Create a new namespace as per the task    
+
+`kubectl create namespace dev`
+
+`kubectl get namespace`
+
+3.  Run the below command to create a pod
+    
+`kubectl run dev-nginx-pod --image=nginx:latest -n dev`
+
+4.  Wait for  pods to get running status       
+ 
+`kubectl get pods -n dev`

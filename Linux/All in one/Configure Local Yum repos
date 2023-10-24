@@ -1,0 +1,85 @@
+## Configure Local Yum repos
+
+### Question :  
+The Nautilus production support team and security team had a meeting last month in which they decided to use local yum repositories for maintaing packages needed for their servers. For now they have decided to configure a local yum repo on Nautilus Backup Server. This is one of the pending items from last month, so please configure a local yum repository on Nautilus Backup Server as per details given below.
+
+a. We have some packages already present at location /packages/downloaded_rpms/ on Nautilus Backup Server.
+
+b. Create a yum repo named local_yum and make sure to set Repository ID to local_yum. Configure it to use package's location /packages/downloaded_rpms/.
+
+c. Install package httpd from this newly created repo.
+
+### Solution:  
+
+1. At first login on Backup server  & Switch to  root user
+
+```
+sshpass -p H@wk3y3 ssh -o StrictHostKeyChecking=no clint@stbkp01
+
+sudo su -
+```
+
+2. Run the Below command to   check is there  already any yum repository is available     
+
+`yum repolist`   
+```
+Loaded plugins: fastestmirror, ovl
+
+Determining fastest mirrors
+
+repolist: 0
+```
+
+
+3. Since there is no repo you need to create local repo  as per the task
+
+`vi /etc/yum.repos.d/local_yum.repo`
+
+`cat /etc/yum.repos.d/local_yum.repo`
+
+[local_yum]
+```
+name=local_yum
+
+baseurl=file:///packages/downloaded_rpms/
+
+enabled = 1
+
+gpgcheck = 0
+```
+
+4. After the file is saved, check to create repo listed 
+
+`yum repolist`
+```
+Loaded plugins: fastestmirror, ovl
+
+Loading mirror speeds from cached hostfile
+
+local_yum                                                                                                           | 2.9 kB  00:00:00    
+
+local_yum/primary_db                                                                                                |  57 kB  00:00:00    
+
+repo id                                                           repo name                                                          status
+
+local_yum                                                         local_yum                                                          55
+
+repolist: 55
+```
+
+5. As per the task install package  (I have installed httpd using this repo )
+
+`yum install httpd`
+
+6. Validate the task 
+
+[root@stbkp01 yum.repos.d]# `yum list httpd`
+```
+Loaded plugins: fastestmirror, ovl
+
+Loading mirror speeds from cached hostfile
+
+Installed Packages
+
+httpd.x86_64                                                 2.4.6-90.el7.centos                                                 @local_yum
+```

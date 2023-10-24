@@ -1,0 +1,17 @@
+## Bash scripts if/else statements
+
+```
+#!/bin/bash
+
+[ ! "$(mysql -uroot -e "show databases;" | grep -i  kodekloud_db01)" ] && (mysql -uroot -e "create database kodekloud_db01;" && echo "Database kodekloud_db01 has been created") || (echo "Database already exist")
+
+[ $(mysql -uroot -sse "SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = 'kodekloud_roy')";) -eq 1 ] && (echo "user already exist") || (mysql -uroot -e "create user 'kodekloud_roy'@'%' identified by 'asdfgdsd';")
+
+mysql -uroot -e "grant all privileges on kodekloud_db01.* to 'kodekloud_roy'@'%';"
+
+mysql -uroot -e "flush privileges;"
+
+[ $(mysql -uroot -sse "SELECT count(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'kodekloud_db01';") -eq 0 ] && (mysql -uroot kodekloud_db01 < /opt/db_backups/db.sql && echo "imported database dump into kodekloud_db01 database.") || (echo "database is not empty")
+
+mysqldump -uroot kodekloud_db01 > /opt/db_backups/kodekloud_db01.sql
+```

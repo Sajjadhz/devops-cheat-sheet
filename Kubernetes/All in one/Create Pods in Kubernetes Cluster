@@ -1,0 +1,56 @@
+## Create Pods in Kubernetes Cluster
+
+### Question : 
+The Nautilus DevOps team has started practicing some pods and services deployment on Kubernetes platform as they are planning to migrate most of their applications on Kubernetes platform. Recently one of the team members has been assigned a task to create a pod as per details mentioned below:
+
+Create a pod named pod-httpd using the image httpd with latest tag only and remember to mention tag i.e httpd:latest.
+
+Labels app should be named as httpd_app, also container should be named as httpd-container.
+
+Note: The kubectl utility on jump_host has been configured to work with the kubernetes cluster.
+
+### Solution:  
+
+1. At first  kubectl  utility configure and working from jump server, run below commands   
+
+`kubectl get namespace`
+
+`kubectl get pods`
+
+2.  Create yaml  file with all the parameters
+```
+cat > /tmp/pod.yaml <<EOF
+
+apiVersion: v1
+
+kind: Pod
+
+metadata:
+
+    name: pod-httpd
+
+    labels:
+
+      app: httpd_app
+
+spec:
+
+    containers:
+
+    - name: httpd-container
+
+      image: httpd:latest
+
+EOF
+```
+
+3.  Run below command to create pod   
+ 
+
+`kubectl apply -f /tmp/pod.yaml`
+
+4.  Wait for  pods to get running status
+
+`kubectl get pods`
+
+`kubectl get pods -o wide`

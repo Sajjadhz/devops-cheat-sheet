@@ -1,0 +1,111 @@
+## Linux LogRotate
+
+### Question: 
+The Nautilus DevOps team is ready to launch a new application, which they will deploy on app servers in Stratos Datacenter. They are expecting significant traffic/usage of squid on app servers after that. This will generate massive logs, creating huge log files. To utilise the storage efficiently, they need to compress the log files and retain them for a maximum of 3 weeks. Check the requirements shared below:
+
+a. In all app servers install squid package.
+
+b. Using logrotate configure squid logs rotation to monthly and keep only 3 rotated.
+
+(If by default log rotation is set, then please update configuration as needed)
+
+### Solution:  
+
+1. Login on all app servers & switch to root user1. Login on   App server as per the task
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+2. Install the package as per the given task
+
+`yum install squid -y`
+
+3. Navigate to logrotate folder and check existing folder
+
+`ll /etc/logrotate.d/`
+```
+total 8
+
+-rw-r--r-- 1 root root 435 Apr 15 18:47 squid
+
+-rw-r--r-- 1 root root 103 Nov  5  2018 yum
+```
+`cat /etc/logrotate.d/squid`
+```
+/var/log/squid/*.log {
+
+    weekly
+
+    rotate 5
+
+    compress
+
+    notifempty
+
+    missingok
+
+    nocreate
+
+    sharedscripts
+
+    postrotate
+
+      # Asks squid to reopen its logs. (logfile_rotate 0 is set in squid.conf)
+
+      # errors redirected to make it silent if squid is not running
+
+      /usr/sbin/squid -k rotate 2>/dev/null
+
+      # Wait a little to allow Squid to catch up before the logs is compressed
+
+      sleep 1
+
+    endscript
+
+}
+```
+4. As per the task edit log file & save the file
+
+
+`vi /etc/logrotate.d/squid`
+
+`cat /etc/logrotate.d/squid`
+```
+/var/log/squid/*.log {
+
+    monthly
+
+    rotate 3
+
+    compress
+
+    notifempty
+
+    missingok
+
+    nocreate
+
+    sharedscripts
+
+    postrotate
+
+      # Asks squid to reopen its logs. (logfile_rotate 0 is set in squid.conf)
+
+      # errors redirected to make it silent if squid is not running
+
+      /usr/sbin/squid -k rotate 2>/dev/null
+
+      # Wait a little to allow Squid to catch up before the logs is compressed
+
+      sleep 1
+
+    endscript
+
+}
+```
+5. Start services & check the status
+
+`systemctl start squid`
+
+`systemctl status squid`

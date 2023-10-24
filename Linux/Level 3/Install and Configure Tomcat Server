@@ -1,0 +1,75 @@
+## Install and Configure Tomcat Server
+
+### Question : 
+The Nautilus application development team recently finished the beta version of one of their Java-based applications, which they are planning to deploy on one of the app servers in Stratos DC. After an internal team meeting, they have decided to use the tomcat application server. Based on the requirements mentioned below complete the task:
+
+a. Install tomcat server on App Server 2 using yum.
+
+b. Configure it to run on port 5001.
+
+c. There is a ROOT.war file on Jump host at location /tmp. Deploy it on this tomcat server and make sure the webpage works directly on base URL i.e without specifying any sub-directory anything like this http://URL/ROOT .
+
+### Solution:  
+1. At first Copy the war file from the jump host to the app server given in the task    
+
+`scp /tmp/ROOT.war steve@stapp02:/tmp`
+
+2. Login on app server as per the task & Switch to  root user 
+
+```
+sshpass -p Am3ric@ ssh -o StrictHostKeyChecking=no steve@stapp02
+
+sudo su -
+```
+3. Install  Tomcat  Packages  & configure   ahead
+
+`yum install -y tomcat`
+
+4. Edit the config file of the tomcat server and replace the port mentioned in the given task Connector port of non-ssl
+
+`vi /usr/share/tomcat/conf/server.xml`
+
+`cat /usr/share/tomcat/conf/server.xml |grep port`
+```
+<Server port="8005" shutdown="SHUTDOWN">
+
+         Define a non-SSL HTTP/1.1 Connector on port 8080
+
+    <Connector port="5001" protocol="HTTP/1.1"
+
+               port="5001" protocol="HTTP/1.1"
+
+    <!-- Define a SSL HTTP/1.1 Connector on port 8443
+
+    <Connector port="8443" protocol="org.apache.coyote.http11.Http11Protocol"
+
+    <!-- Define an AJP 1.3 Connector on port 8009 -->
+
+    <Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />
+
+    <!-- You should set jvmRoute to support load-balancing via AJP ie :
+```
+
+5. copy war file from tmp to tomcat root directory
+
+`cp /tmp/ROOT.war /usr/share/tomcat/webapps`
+
+`ll /usr/share/tomcat/webapps/`
+```
+total 12
+
+drwxr-xr-x 4 tomcat tomcat 4096 Aug  8 08:46 ROOT
+
+-rw-r--r-- 1 root   root   4529 Aug  8 08:45 ROOT.war
+```
+
+6. Start the tomcat service & check the status.    
+
+`systemctl start tomcat`
+
+`systemctl status tomcat`
+
+7. Validate the task by the below commands
+
+`curl -i http://stapp02:5001`
+

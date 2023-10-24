@@ -1,0 +1,77 @@
+## Apache Troubleshooting KodeKloud Engineer Task Success
+
+### Question :  
+xFusionCorp Industries utilizes monitoring tools to check the status of every service, application, etc. running on the systems. The monitoring system identified that Apache service is not running on some of the Nautilus Application Servers in Stratos Datacenter.
+
+Identify the faulty Nautilus Application Servers and fix the issue. Also, make sure Apache service is up and running on all Nautilus Application Servers. Do not try to stop any kind of firewall that is already running.
+
+Apache is running on 8089 port on all Nautilus Application Servers and its document root must be /var/www/html on all app servers.
+
+Finally you can test from jump host using curl command to access Apache on all app servers and it should be reachable and you should get some page (it can be just an HTML or PHP page as it is). E.g. curl http://172.16.238.10:8089/
+
+
+### Solution:  
+1. At first login on App server  & Switch to  root user 
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+
+2. Run Below command to start  Apache httpd service ,while start you may get below error.
+
+`systemctl start httpd`
+```
+Job for httpd.service failed because the control process exited with error code. See "systemctl status httpd.service" and "journalctl -xe" for details.
+```
+[root@stapp01 ~]#
+
+3. check the systemctl status httpd to know the reason of service failed.
+
+`systemctl status  httpd.service`
+
+4.  You can cat the file with line no to check the syntax issue
+
+`cat -n  /etc/httpd/conf/httpd.conf  |grep 31`
+5. Edit the  conf  file and correct the changes as per below
+
+`vi /etc/httpd/conf/httpd.conf`
+
+`cat -n  /etc/httpd/conf/httpd.conf  |grep 31`
+```
+    31  ServerRoot "/etc/httpd"
+
+   131  <Directory "/var/www/html">
+
+   231      # Example:
+```
+ `cat /etc/httpd/conf/httpd.conf |grep DocumentRoot`
+```
+# DocumentRoot: The directory out of which you will serve your
+
+DocumentRoot "/var/www/html"
+
+# access content that does not live under the DocumentRoot.
+
+`cat /etc/httpd/conf/httpd.conf |grep Listen`
+
+# Listen: Allows you to bind Apache to specific IP addresses and/or
+
+# Change this to Listen on specific IP addresses as shown below to
+
+#Listen 12.34.56.78:80
+
+Listen 8089
+
+```
+
+6.  Save the file and start the httpd service & check the status.
+      
+`systemctl start httpd  &&  systemctl  status httpd`
+
+7.  Validate Apache httpd running  as per the task request
+
+`curl http://172.16.238.10:8089/`
+
+
+

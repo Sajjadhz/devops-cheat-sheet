@@ -1,0 +1,30 @@
+## Linux Banner KodeKloud Engineer Task
+
+###  Question :  
+During the monthly compliance meeting, it was pointed out that several servers in the Stratos DC do not have a valid banner. The security team has provided serveral approved templates which should be applied to the servers to maintain compliance. These will be displayed to the user upon a successful login.
+
+
+Update the message of the day on all application and db servers for Nautilus. Make use of the approved template located at /tmp/nautilus_banner on jump host
+
+### Solution:  
+1.  Copy the /tmp/nautilus_banner using scp command from jumpserver to  
+
+all Apps & DB servers.
+
+`ll /tmp/nautilus_banner`
+
+`scp -r  /tmp/nautilus_banner  tony@stapp01:/tmp`
+
+2. Login to all the App server  & switch to root user 
+
+    Now move copied file banner  /tmp to /etc/motd 
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+
+mv /tmp/nautilus_banner  /etc/motd
+```
+
+3. Validate the open new terminal and login with user 
+`ssh tony@stapp01`

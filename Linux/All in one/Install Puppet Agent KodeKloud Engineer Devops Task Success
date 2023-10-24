@@ -1,0 +1,55 @@
+## Install Puppet Agent KodeKloud Engineer Devops Task Success
+
+### Question: 
+The Nautilus DevOps team to would like to set up a Puppet agent mode to manage their infrastructure in Stratos DC. For testing they are trying to install and set up Puppet agent package on App Server 2. Please find below more details about the task to proceed further.
+
+Install puppet agent on App Server 2 also start its service.
+
+### Solution : 
+1. At first login to the app server as per the task & Switch to the root user
+
+```
+sshpass -p Am3ric@ ssh -o StrictHostKeyChecking=no steve@stapp02
+
+sudo su -
+```
+2. For puppet agent, 1st we need to install puppet repo
+
+`yum install https://yum.puppetlabs.com/puppet-release-el-7.noarch.rpm`
+
+3. Install puppet agent 
+
+`yum install puppet-agent`
+
+4. Start puppet service
+```
+/opt/puppetlabs/bin/puppet resource service puppet ensure=running enable=true
+
+Notice: /Service[puppet]/ensure: ensure changed 'stopped' to 'running'
+
+service { 'puppet':
+
+  ensure   => 'running',
+
+  enable   => 'true',
+
+  provider => 'systemd',
+
+}
+```
+5. Validate the task 
+```
+rpm -qa |grep puppet
+
+puppet-release-1.0.0-14.el7.noarch
+
+puppet-agent-7.9.0-1.el7.x86_64
+
+[root@stapp02 ~]#
+
+ps -ef |grep puppet
+
+root      1204     1  0 11:38 ?        00:00:01 /opt/puppetlabs/puppet/bin/ruby /opt/puppetlabs/puppet/bin/puppet agent --no-daemonize
+
+root      1540   571  0 11:40 pts/0    00:00:00 grep --color=auto puppet
+```

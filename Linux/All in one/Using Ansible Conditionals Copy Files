@@ -1,0 +1,102 @@
+## Using Ansible Conditionals Copy Files
+
+### Question : 
+The Nautilus DevOps team discussed how they can train different team members to use Ansible for different automation tasks. There are numerous ways to perform a particular task using Ansible, but we want to utilize each aspect Ansible offers. to the team wants to utilise Ansible's conditionals to perform the following task:
+
+An inventory file is already placed under /home/thor/ansible on jump host, with all the Stratos DC app servers included.
+
+Create a playbook /home/thor/ansible/playbook.yml and make sure to use Ansible's when conditionals statements to perform the following tasks.
+
+Copy blog.txt file present under /usr/src/dba directory on jump host to App Server 1 under /opt/dba directory. Its user and group owner must be user tony and its permissions must be 0777 .
+
+Copy story.txt file present under /usr/src/dba directory on jump host to App Server 2 under /opt/dba directory. Its user and group owner must be user steve and its permissions must be 0777 .
+
+Copy media.txt file present under /usr/src/dba directory on jump host to App Server 3 under /opt/dba directory. Its user and group owner must be user banner and its permissions must be 0777 .
+
+NOTE: You can use ansible_nodename variable from gathered facts with when condition. Additionally, please make sure you are running the play for all hosts i.e use - hosts: all.
+
+Note: Validation will try to run playbook using command ansible-playbook -i inventory playbook.yml, so please make sure playbook works this way, without passing any extra arguments.
+
+### Solution:  
+1. At first ansible inventory file is working properly and doesn't have any file exist from jump server to all the app server's      
+```
+cd /home/thor/ansible/
+
+ll
+
+total 8
+
+-rw-r--r-- 1 thor thor  36 Jun 21 07:24 ansible.cfg
+
+-rw-r--r-- 1 thor thor 237 Jun 21 07:24 inventory
+
+
+
+ansible all -a "ls -ltr /opt/dba" -i inventory
+```
+2.  If you see above output then create playbook file
+`vi playbook.yml`
+
+```
+- name: Copy text files to Appservers
+
+  hosts: all
+
+  become: yes
+
+  tasks:
+
+    - name: Copy blog.txt to stapp01
+
+      ansible.builtin.copy:
+
+        src: /usr/src/dba/blog.txt
+
+        dest: /opt/dba/
+
+        owner: tony
+
+        group: tony
+
+        mode: "0755"
+
+      when: inventory_hostname == "stapp01"
+
+    - name: Copy story.txt to stapp02
+
+      ansible.builtin.copy:
+
+        src: /usr/src/dba/story.txt
+
+        dest: /opt/dba/
+
+        owner: steve
+
+        group: steve
+
+        mode: "0755"
+
+      when: inventory_hostname == "stapp02"
+
+    - name: Copy media.txt to stapp03
+
+      ansible.builtin.copy:
+
+        src: /usr/src/dba/media.txt
+
+        dest: /opt/dba/
+
+        owner: banner
+
+        group: banner
+
+        mode: "0755"
+
+      when: inventory_hostname == "stapp03"
+```
+3.  Post file saved , run below command to execute the playbook        
+
+`ansible-playbook -i inventory playbook.yml`
+
+4.  Validate the task by below command 
+`ansible all -a "ls -ltr /opt/dba" -i inventory`

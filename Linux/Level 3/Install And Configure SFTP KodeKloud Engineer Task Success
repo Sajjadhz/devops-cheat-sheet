@@ -1,0 +1,112 @@
+## Install And Configure SFTP KodeKloud Engineer Task Success
+
+### Question : 
+Some of the developers from Nautilus project team have asked for SFTP access to at least one of the app server in Stratos DC. After going through the requirements, the system admins team has decided to configure the SFTP server on App Server 3 server in Stratos Datacenter. Please configure it as per the following instructions:
+
+a. Create an SFTP user anita and set its password to dCV3szSGNA.
+
+b. Password authentication should be enabled for this user.
+
+c. Set its ChrootDirectory to /var/www/nfsshare.
+
+d. SFTP user should only be allowed to make SFTP connections.
+
+### Solution:  
+
+1. At first login on App server as per the task &  Switch to root user 
+
+```
+sshpass -p BigGr33n ssh -o StrictHostKeyChecking=no banner@stapp03
+
+sudo su -
+```
+
+2. Create the SFTP user  & set the password as per given in the task    
+
+`useradd anita`
+
+`passwd anita`
+
+3. Make directory & set it as ChrootDirectory as per task
+
+`mkdir -p /var/www/nfsshare`
+
+`ll -lsd /var/www/nfsshare`
+
+`chown root:root  /var/www`
+
+`chmod -R 755 /var/www`
+
+`ll -lsd /var/www/`
+
+4. Edit the  /etc/ssh/sshd_config  file and add the parameters as per below
+Note : - User & Chrootdirectory would differ so please check your task
+
+`vi /etc/ssh/sshd_config`
+`cat /etc/ssh/sshd_config  |grep sftp -A 10`
+```
+#subsystem      sftp    /usr/libexec/openssh/sftp-server
+
+Subsystem       sftp    internal-sftp
+
+Match User anita
+
+ForceCommand internal-sftp
+
+PasswordAuthentication yes
+
+ChrootDirectory /var/www/nfsshare
+
+PermitTunnel no
+
+AllowTcpForwarding no
+
+X11Forwarding no
+
+AllowAgentForwarding no
+
+ # Example of overriding settings on a per-user basis
+
+#Match User anoncvs
+
+#       X11Forwarding no
+```
+5. Restart the sshd   service 
+
+
+`systemctl restart sshd`
+
+`systemctl status sshd`
+
+6.  Validate the task by below commands from the jump server as well localhost
+
+`sftp anita@stapp03`
+```
+anita@stapp03's password:
+
+Connected to stapp03.
+
+sftp>
+
+```
+      
+
+`sftp anita@localhost`
+```
+The authenticity of host 'localhost (127.0.0.1)' can't be established.
+
+ECDSA key fingerprint is SHA256:q8RjKhhAoM1+4mb5JitQytziiM989ai92m4wR2TbIgs.
+
+ECDSA key fingerprint is MD5:1b:31:de:54:42:98:2f:78:03:8c:e6:71:fc:39:79:14.
+
+Are you sure you want to continue connecting (yes/no)? yes
+
+Warning: Permanently added 'localhost' (ECDSA) to the list of known hosts.
+
+anita@localhost's password:
+
+Connected to localhost.
+
+sftp>
+```
+

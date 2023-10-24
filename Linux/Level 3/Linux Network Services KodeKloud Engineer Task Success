@@ -1,0 +1,36 @@
+## Linux Network Services KodeKloud Engineer Task Success
+
+### Question :  
+One of our app servers has an issue, as its Apache service is not reachable on port 5003 (which is our Apache port). The service itself could be down, the firewall could be at fault, or something else could be causing the issue.
+
+Solution:  
+1. At first  telnet from jump server to identify which App server have the issue
+
+`telnet stapp01 5003`
+`telnet stapp02 5003`
+`telnet stapp03 5003`
+
+2.   Since In mine task I cant able to telnet stapp01 so login on  server to troubleshoot further
+
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+
+3. Run Below command to check the existing Apache httpd service status & start
+
+     `systemctl status httpd &&  systemctl start httpd`
+
+4. while start you may get errors 
+
+
+5.  check the systemctl status httpd to know the reason of service failed. 
+
+6.  With the help of  netstat check which service is using your port and whats is PID. In below snipping 
+
+  `netstat -tulnp`
+
+7.  Kill the PID 
+
+8.  Validate Apache httpd running  as per the task request

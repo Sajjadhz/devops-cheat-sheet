@@ -1,0 +1,87 @@
+## Node Affinity in Kubernetes Cluster
+
+### Question : 
+The Nautilus DevOps team is doing some testing around the Kubernetes cluster for pods, deployments etc. A new ticket has been raised by one of the developer with some particular requirements. Find below more details and perform the task accordingly.
+
+Create a label for node node01 color=grey,
+
+Based on the new label created for node01 using nodeAffinity matchExpressions create a new deployment named grey, use image nginx with latest tag only and remember to mention tag i.e nginx:latest and 3 replicas; ensure container name is nginx-container and that it gets placed on the node01 node only. Also make sure all pods are in running state before clicking on FINISH.
+
+Note: The kubectl utility on jump_host has been configured to work with the kubernetes cluster.
+
+### Solution:  
+1. At first  kubectl  utility configure and working from jump server, run below commands   
+
+`kubectl get deploy`
+
+`kubectl get nodes --show-labels`
+
+2.  Set color grey as per the task to your node.
+
+`kubectl  label  nodes node01 color=grey`
+
+3. Create affinity.yaml  file with all the parameters 
+
+```
+cat > /tmp/affinity.yaml <<EOF
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+
+  name: grey
+
+spec:
+
+  replicas: 3
+
+  selector:
+
+    matchLabels:
+
+      app: nginx-pod
+
+  template:
+
+    metadata:
+
+      labels:
+
+        app: nginx-pod
+
+    spec:
+
+      affinity:
+
+        nodeAffinity:
+
+          requiredDuringSchedulingIgnoredDuringExecution:
+
+            nodeSelectorTerms:
+
+              - matchExpressions:
+
+                  - key: color
+
+                    operator: In
+
+                    values:
+
+                      - grey
+
+      containers:
+
+        - name: nginx-container
+
+          image: nginx:latest
+EOF
+```
+
+4.  Run below command to create pod
+
+`kubectl create -f /tmp/affinity.yml`
+
+5.  Wait for  pods to get running status & check the nodes status     
+
+`kubectl get deploy`

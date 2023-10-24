@@ -1,0 +1,30 @@
+## Install and Configure DB Server KodeKloud Engineer Task Success
+
+### Question :  
+We recently migrated one of our WordPress websites from an old server to a new infrastructure in Stratos Datacenter. We have already set up LAMP, except for the database. We have also restored the website code; however, we need to restore the database to make it work on the new infra. Please perform the below-given steps on DB host:
+
+a. Install/Configure MariaDB server.
+
+b. Create a database with name kodekloud_db10.
+
+c. There is a DB dump on jump_host under location /home/thor/db.sql. Restore this database in newly created database.
+
+d. Create a user kodekloud_sam and set any password you like.
+
+e. Grant full permissions to user kodekloud_sam on database kodekloud_db10.
+
+f. Update database-related details in /data/wp-config.php file on storage server, which is our NFS server having a share /data mounted on each app server on location /var/www/html. (for more details about how to update WordPress config file please visit https://wordpress.org/support/article/editing-wp-config-php/)
+
+g. You can access the website on LBR link; to do so click on the + button on top of your terminal, select option Select port to view on Host 1, and after adding port 80 click on Display Port.
+
+### Solution:  
+
+1. At first login on database server 
+```
+sshpass -p Sp!dy ssh -o StrictHostKeyChecking=no peter@stdb01
+
+sudo su -
+```
+
+3. Install mariadb 
+    `yum -y install  mariadb`

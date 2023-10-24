@@ -1,0 +1,45 @@
+## Linux Configure sudo
+
+### Question: 
+We have some users on all app servers in Stratos Datacenter. Some of them have been assigned some new roles and responsibilities, therefore their users need to be upgraded with sudo access so that they can perform admin level tasks.
+
+a. Provide sudo access to user jim on all app servers.
+
+b. Make sure you have set up password-less sudo for the user.
+
+### Solution:  
+
+1. Login on all app servers & switch to root user
+
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+
+2. Check user is existing & have sudo permission 
+
+`id jim`
+```
+uid=1002(jim) gid=1002(jim) groups=1002(jim)
+```
+`su - jim`
+ 
+`sudo cat /etc/sudoers |grep jim`
+```
+ We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+  #1) Respect the privacy of others.
+  #2) Think before you type.
+  #3) With great power comes great responsibility.
+  [sudo] password for jim:
+```
+3. switch to root and provide sudo permission without a password 
+
+`logout`
+`visudo`
+`su - jim`
+`sudo cat /etc/sudoers |grep jim`
+```
+jim    ALL=(ALL)   NOPASSWD:ALL
+```

@@ -1,0 +1,69 @@
+## Set Limits for Resources in Kubernetes
+
+### Question : 
+Recently some of the performance issues were observed with some applications hosted on Kubernetes cluster. The Nautilus DevOps team has observed some resources constraints where some of the applications are running out of resources like memory, cpu etc., and some of the applications are consuming more resources than needed. Therefore, the team has decided to add some limits for resources utilization. Below you can find more details.
+
+Create a pod named httpd-pod and a container under it named as httpd-container, use httpd image with latest tag only and remember to mention tag i.e httpd:latest and set the following limits:
+
+Requests: Memory: 15Mi, CPU: 1
+
+Limits: Memory: 20Mi, CPU: 2
+
+Note: The kubectl utility on jump_host has been configured to work with the kubernetes cluster.
+
+### Solution:  
+
+1. At first  kubectl  utility configure and working from jump server, run below commands
+
+`kubectl get namespace`
+
+`kubectl get pods`
+
+
+2.  Create yaml  file with all the parameters
+
+```
+cat > /tmp/limit.yaml <<EOF
+apiVersion: v1
+
+kind: Pod
+
+metadata:
+
+  name: httpd-pod
+
+spec:
+
+  containers:
+
+  - name: httpd-container
+
+    image: httpd:latest
+
+    resources:
+
+      requests:
+
+        memory: "15Mi"
+
+        cpu: "1"
+
+      limits:
+
+        memory: "20Mi"
+
+        cpu: "2"
+EOF
+```
+
+3.  Run below command to create pod
+    
+`kubectl create -f /tmp/limit.yaml`
+
+4.  Wait for  pods to get running status    
+
+`kubectl get pods`
+
+5.  Validate the task by running     
+
+`kubectl describe pods httpd-pod`

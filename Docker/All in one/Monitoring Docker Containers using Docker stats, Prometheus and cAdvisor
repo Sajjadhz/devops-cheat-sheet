@@ -1,0 +1,121 @@
+## Monitoring Docker Containers using Docker stats, Prometheus and cAdvisor
+
+will walk through how to monitor containers using Docker stats, Prometheus and cAdvisor.
+
+
+
+1. Log into the Docker server and then become the root user with a sudo su -
+
+    I already have two containers  running in  live environment: nginx and redis.
+`docker ps`
+
+`vi prometheus.yml`
+
+`cat prometheus.yml`
+```
+scrape_configs:
+
+- job_name: cadvisor
+
+  scrape_interval: 5s
+
+  static_configs:
+
+  - targets:
+
+    - cadvisor:8080
+```
+3. To set up Prometheus services, we've got to create configuration files. 
+
+We're going to make docker-compose.yml, right here in the same directory
+
+`vi docker-compose.yml`
+
+`cat docker-compose.yml`
+
+```
+version: '3'
+
+services:
+
+  prometheus:
+
+    image: prom/prometheus:latest
+
+    container_name: prometheus
+
+    ports:
+
+      - 9090:9090
+
+    command:
+
+      - --config.file=/etc/prometheus/prometheus.yml
+
+    volumes:
+
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+    depends_on:
+
+      - cadvisor
+
+ 
+
+  cadvisor:
+
+    image: google/cadvisor:latest
+
+    container_name: cadvisor
+
+    ports:
+
+      - 8080:8080
+
+    volumes:
+
+      - /:/rootfs:ro
+
+      - /var/run:/var/run:rw
+
+      - /sys:/sys:ro
+
+      - /var/lib/docker:/var/lib/docker:ro
+```
+
+4. To create the cadvisor & Prometheus container run 
+
+`docker-compose up -d`
+
+5. Verify by Docker ps additional new containers should be running status.
+
+`docker ps`
+
+6. Viewing the Prometheus Web Interface using the correct port number:                       http://<IP_ADDRESS>:9090/graph/
+
+7. Viewing the cAdvisor Web Interface using the correct port number:                           http://<IP_ADDRESS>:8080/docker/nginx/
+
+
+8. Stats in Docker various aspects (CPU and memory usage, etc.) of  containers.
+ 
+     Press crtl + c to exit from stats 
+
+`vi  ~/stats.sh`
+
+ `cat  ~/stats.sh`
+```
+docker stats --format "table {{.Name}} {{.ID}} {{.MemUsage}} {{.CPUPerc}}"
+```
+`./stats.sh`
+```
+NAME CONTAINER ID MEM USAGE / LIMIT CPU %
+
+prometheus d9b2f7d472da 37.7MiB / 962.8MiB 0.00%
+
+cadvisor 3d11890e1cd1 54.3MiB / 962.8MiB 1.56%
+
+nginx e80fef4dcb1d 2.215MiB / 962.8MiB 0.00%
+
+redis 753447b96a14 7.945MiB / 962.8MiB 0.12%
+```
+9. We got Prometheus running, and we're able to monitor our containers with it. Congratulations!

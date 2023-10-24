@@ -1,0 +1,42 @@
+## Git Revert Some Changes
+
+### Question :  
+The Nautilus application development team was working on a git repository /usr/src/kodekloudrepos/demo present on Storage server in Stratos DC. However, they reported an issue with the recent commits being pushed to this repo. They have asked the DevOps team to revert repo HEAD to last commit. Below are more details about the task:
+
+In /usr/src/kodekloudrepos/demo git repository, revert the latest commit ( HEAD ) to the previous commit (JFYI the previous commit hash should be with initial commit message ).
+
+Use revert demo message (please use all small letters for commit message) for the new revert commit. 
+
+### Solution:  
+1. At first login on storage server  & switch to root user
+
+```
+sshpass -p Bl@kW ssh -o StrictHostKeyChecking=no natasha@ststor01
+
+sudo su -
+```
+
+2. Check repo  git status 
+
+`ll /usr/src/kodekloudrepos/demo/`
+
+`cd /usr/src/kodekloudrepos/demo/`
+
+`git status`
+
+3. Check Git logs
+
+`git log`
+
+4. Run command revert HEAD and Add , Commit with given message in task
+
+`git revert HEAD`
+
+`git add .`
+
+`git commit -m " revert demo "`
+
+5. Validate the task
+
+`git log`
+

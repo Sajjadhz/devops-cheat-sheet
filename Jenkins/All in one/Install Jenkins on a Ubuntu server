@@ -1,0 +1,78 @@
+## Install Jenkins on a Ubuntu server
+
+### Question : 
+The DevOps team of xFusionCorp Industries is planning to setup some CI/CD pipelines. After several meetings they have decided to use Jenkins server. So, we need to setup a Jenkins Server as soon as possible so that we can start our testing. Please complete the task as per requirements mentioned below:
+
+Install jenkins on jenkins server using apt only, and start its service.
+
+Jenkin's admin user name should be theadmin, password should be Adm!n321, full name should be Anita and email should be anita@jenkins.com.
+
+Note:
+
+For this task ssh into jenkins server using user root and password S3curePass from jump host.
+
+To complete the jenkins installation after installing packages and after starting the jenkins service, click on the + button in the top left corner and select option Select port to view on Host 1, enter port 8081 and click on Display Port.
+
+
+
+
+Note: For these kind of scenarios requiring changes to be done in a web UI, please take screenshots so that you can share it with us for review in case your task is marked incomplete. You may also consider using a screen recording software such as loom.com to record and share your work.iew in case your task is marked incomplete.
+
+Prerequisites : - 
+
+Install JAVA packages.
+
+Install & Configure Jenkins repo
+
+
+
+### Solution:  
+
+1. Login on the jenkins server as a root 
+
+`ssh root@jenkins`
+
+2. Update the packages 
+
+
+`apt-get update`
+
+3. Download Jenkins repo and configure it
+
+`wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | apt-key add -`
+
+`sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'`
+
+`ll /etc/apt/sources.list.d/`
+
+4. Install the packages 
+
+`apt install apt-transport-https`
+
+4. Update the system packages 
+
+`apt-get update`
+
+5. Install Jenkins using apt 
+
+`apt install jenkins`
+
+6. While starting Jenkins services you may get error for java.
+
+`service jenkins start`
+
+7. Install Java package
+
+`apt install openjdk-8-jdk`
+
+8. Start Jenkins services & check the status 
+`service jenkins start`
+
+`service jenkins status`
+
+9. Open WEB GUI and proceed with further installation 
+
+10. To unlock jenkins use initial password store in file 
+
+
+`cat /var/lib/jenkins/secrets/initialAdminPassword`

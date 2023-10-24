@@ -1,0 +1,27 @@
+## Deploy an App on Docker Containers
+
+### 
+
+```
+version: '3'
+services:
+  php_host:
+    image: php:7.3-apache-stretch
+    container_name: php_host
+    ports:
+      - "6100:80"
+    volumes:
+      - /var/www/html:/var/www/html
+
+  mysql_host:
+    image: mariadb:latest
+    container_name: mysql_host
+    ports:
+      - "3306:3306"
+    volumes:
+      - /var/lib/mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: database_host
+      MARIADB_ROOT_PASSWORD: db_pass123
+      MYSQL_USER: madhu
+```

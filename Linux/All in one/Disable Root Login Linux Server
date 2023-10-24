@@ -1,0 +1,44 @@
+## Disable Root Login Linux Server
+
+### Question :  
+After doing some security audits of servers, xFusionCorp Industries security team has implemented some new security policies. One of them is to disable direct root login through SSH.
+
+Disable direct SSH root login on all app servers in Stratos Datacenter.
+
+Solution:  
+
+1. At first login to one of the App server
+
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+
+2.  Edit the  /etc/ssh/sshd_config  file and correct the changes as per below
+
+
+`cat /etc/ssh/sshd_config  | grep PermitRoot`
+```
+#PermitRootLogin yes
+
+# the setting of "PermitRootLogin without-password".
+```
+
+Replace the    #PermitRootLogin yes  to    PermitRootLogin no
+
+
+`vi /etc/ssh/sshd_config`
+
+`cat /etc/ssh/sshd_config  | grep PermitRoot`
+```
+PermitRootLogin no
+
+# the setting of "PermitRootLogin without-password".
+```
+
+3.  Restart service: systemctl restart sshd && systemctl status sshd
+
+
+`systemctl restart sshd && systemctl status sshd`
+

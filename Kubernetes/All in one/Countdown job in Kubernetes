@@ -1,0 +1,49 @@
+## Countdown job in Kubernetes
+
+### Question : 
+Create a job countdown-devops.
+
+The spec template should be named as countdown-devops (under metadata), and the container should be named as container-countdown-devops
+
+Use image debian with latest tag only and remember to mention tag i.e debian:latest, and restart policy should be Never.
+
+Use command for i in ten nine eight seven six five four three two one ; do echo $i ; done
+
+### Solution:  
+1. At first  kubectl  utility configure and working from jump server, run below commands
+
+`kubectl get services`
+
+`kubectl get pods`
+
+2.  Create yaml  file with all the parameters
+
+```
+cat > /tmp/devops.yaml <<EOF
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: countdown-devops
+spec:
+  template:
+    metadata:
+      name: countdown-devops
+    spec:
+      containers:
+        - name: container-countdown-devops
+          image: debian:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            [
+              "for i in ten nine eight seven six five four three two one ; do echo $i ; done",
+            ]
+      restartPolicy: Never
+EOF
+```
+
+4.  Run below command to create pod
+
+`kubectl create -f /tmp/devops.yaml`
+
+5.  Wait for  pods to get running status
+`kubectl get pods`

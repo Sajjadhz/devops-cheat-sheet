@@ -1,0 +1,63 @@
+## IPtables Installation And Configuration success KodeKloud Engineer Task
+
+###  Question :  
+We have one of our websites up and running on our Nautilus infrastructure in Stratos DC. Our security team has raised a concern that right now Apache's port i.e 8081 is open for all since there is no firewall installed on these hosts. So we have decided to add some security layer for these hosts and after discussions and recommendations we have come up with the following requirements:
+
+1. Install search iptables and all its dependencies on each app host.
+
+2. Block incoming port 8081 on all apps for everyone except for LBR host.
+
+3. Make sure the rules remain, even after system reboot.
+
+### Solution:  
+1. At first login on App server  
+
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+
+3. Run Below command to install IPtables service 
+
+    `yum install  -y iptables-services`
+
+4. Start & enable the IPtables service below commands
+
+    `systemctl start search iptables && systemctl enable search iptables`
+
+
+
+5. Add below IPtables Rules as per your task 
+
+```
+iptables -A INPUT -p tcp --destination-port 8081 -s 172.16.238.14 -j ACCEPT
+iptables -A INPUT -p tcp --destination-port 8081 -j DROP
+```
+
+6. Add below IPtables Rules  for successful task completion 
+```
+    iptables -L --line-numbers
+
+    iptables -R INPUT 5 -p icmp -j REJECT
+```
+
+7.  Finally saved the rules to ensure they remain persistent across reboot
+
+    `service iptables save `
+
+8.  For persistent across reboot restart IPtables service & validate
+
+    `systemctl restart iptables && systemctl status iptables`
+
+
+
+9.  Validate the task by listing Iptables Rules post restart services.
+
+
+
+    Telnet or Curl the Apache port 8081
+    From LB server it should be reachable & accessible
+
+    Whereas  form Jump server it should not be accessible 
+

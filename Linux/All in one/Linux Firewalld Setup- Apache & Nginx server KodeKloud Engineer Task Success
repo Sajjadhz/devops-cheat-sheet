@@ -1,0 +1,57 @@
+## Linux Firewalld Setup- Apache & Nginx server KodeKloud Engineer Task Success
+
+### Question :  
+Install and configure search firewalld on all app servers.
+
+a. Allow all incoming connections on Nginx port.
+
+b. Allow incoming connections from LB host only on Apache port and block for all others.
+
+c. All rules must be permanent.
+
+d. Zone should be public.
+
+e. If Apache or Nginx services aren't running already, please make sure to start them.
+
+
+### Solution:  
+
+1. At first login on App server 
+
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+
+2. Run Below command to check the existing Apache httpd & Nginx service status.
+
+     `systemctl status httpd &&  systemctl status nginx`
+
+3. Get the Apache & Nginx Listen port  by using the below command
+
+    `grep -i Listen /etc/httpd/conf/ht*  /etc/nginx/nginx.conf`
+
+
+4.  Now Install Firewalld : `yum install -y search firewalld -y`
+
+
+6. Start the firewalld service , Enable and Check the status 
+
+```
+systemctl start firewalld && systemctl enable firewalld && systemctl status firewalld
+```
+7. Allow the nginx port
+
+`firewall-cmd --permanent --zone=public --add-port=8096/tcp`
+
+
+8. Allow services http & https port 
+
+`firewall-cmd --permanent --zone=public --add-service={http,https}`
+
+9. Allow the Apache http  port  with LB host IP
+
+`firewall-cmd --permanent --zone=public --add-rich-rule='rule family="ipv4" source                 address=172.16.238.14 port protocol=tcp port=8083 accept'`
+
+10. Reload firewalld service to take effect & validate the rules

@@ -1,0 +1,60 @@
+## PAM Authentication For Apache KodeKloud Engineer Task Success
+
+### Question:   
+a. We want to use basic authentication.
+
+b. We do not want to use htpasswd file base authentication. Instead, we want to use PAM authentication, i.e Basic Auth + PAM so that we can authenticate with a Linux user.
+c. We already have a user rose with password B4zNgHA7Ya which you need to provide access to.
+
+### Solution:  
+1. At first login on app server  
+
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+
+2. Run Below command to install  PWAUTH
+
+     `yum --enablerepo=epel -y install mod_authnz_external pwauth `
+
+
+
+4. Edit the  `vi /etc/httpd/conf.d/authnz_external.conf`  file and Added below lines end of config file & Save it 
+```
+<Directory /var/www/html/protected>
+
+AuthType Basic
+
+AuthName "PAM Authentication"
+
+AuthBasicProvider external
+
+AuthExternal pwauth
+
+require valid-user
+
+</Directory>
+```
+
+
+5. Run the Below command to create a protected directory & cat the index.html file
+```
+mkdir -p /var/www/html/protected
+
+cat /var/www/html/protected/index.html
+```
+
+
+
+6. Post saved config file , start the httpd services
+
+`systemctl start httpd`
+
+
+
+7.  Validate Apache HTTPd running  as per the task request
+
+
+

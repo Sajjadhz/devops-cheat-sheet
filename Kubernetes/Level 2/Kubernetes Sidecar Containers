@@ -1,0 +1,246 @@
+## Kubernetes Sidecar Containers
+
+### Question : 
+We have a web server container running the nginx image. The access and error logs produced by the web server are not critical enough to be placed on a persistent volume. However, Nautilus developers need access to the last 24 hours of logs so they can trace issues and bugs. Therefore, we need to ship the access and error logs for the web server to a log-aggregation service. Following the separation of concerns principle, we implement the Sidecar pattern by deploying a second container that ships the error and access logs from nginx. Nginx does one thing, and it does it well—serving web pages. The second container also specializes in its task—shipping logs. Since containers are running on the same Pod, we can use a shared emptyDir volume to read and write logs.
+
+Create a pod named webserver.
+
+Create an emptyDir volumemount name: shared-logs.
+
+Create two containers from nginx and ubuntu images with latest tag only and remember to mention tag i.e nginx:latest, nginx container name should be nginx-container and ubuntu container name should be sidecar-container on webserver pod.
+
+Add command on sidecar-container "sh","-c","while true; do cat /var/log/nginx/access.log /var/log/nginx/error.log; sleep 30; done"
+
+
+Mount volume /var/log/nginx on both containers, all containers should be up and running.
+
+### Solution:  
+1. At first  kubectl  utility configure and working from jump server, run below commands    
+
+`kubectl get services`
+
+`kubectl get pods`
+
+2.  Create yaml  file with all the parameters 
+
+```
+cat > /tmp/webserver.yaml <<EOF
+apiVersion: v1
+
+kind: Pod
+
+metadata:
+
+  name: webserver
+
+  labels:
+
+    name: webserver
+
+spec:
+
+  volumes:
+
+    - name: shared-logs
+
+      emptyDir: {}
+
+  containers:
+
+    - name: nginx-container
+
+      image: nginx:latest
+
+      volumeMounts:
+
+        - name: shared-logs
+
+          mountPath: /var/log/nginx
+
+    - name: sidecar-container
+
+      image: ubuntu:latest
+
+      command:
+
+        [
+
+          "/bin/bash",
+
+          "-c",
+
+          "while true; do cat /var/log/nginx/access.log /var/log/nginx/error.log; sleep 30; done",
+
+        ]
+
+      volumeMounts:
+
+        - name: shared-logs
+
+          mountPath: /var/log/nginx
+EOF
+```
+
+4.  Run the below command to create a pod    
+
+`kubectl create -f /tmp/webserver.yaml`
+
+5.  Wait for  pods to get running status      
+
+`kubectl get pods`
+
+6. Validate the task by running below command
+
+`kubectl describe pods`
+
+Name:         webserver
+
+Namespace:    default
+
+Priority:     0
+
+Node:         node01/172.17.0.26
+
+Start Time:   Thu, 15 Jul 2021 14:04:04 +0000
+
+Labels:       name=webserver
+
+Annotations:  <none>
+
+Status:       Running
+
+IP:           10.244.1.2
+
+IPs:
+
+  IP:  10.244.1.2
+
+Containers:
+
+  nginx-container:
+
+    Container ID:   docker://2b8b73cac375285934371dbadf497268ca297581e4e19a63d11cef3a5c4923f1
+
+    Image:          nginx:latest
+
+    Image ID:       docker-pullable://nginx@sha256:353c20f74d9b6aee359f30e8e4f69c3d7eaea2f610681c4a95849a2fd7c497f9
+
+    Port:           <none>
+
+    Host Port:      <none>
+
+    State:          Running
+
+      Started:      Thu, 15 Jul 2021 14:04:11 +0000
+
+    Ready:          True
+
+    Restart Count:  0
+
+    Environment:    <none>
+
+    Mounts:
+
+      /var/log/nginx from shared-logs (rw)
+
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-ffr4n (ro)
+
+  sidecar-container:
+
+    Container ID:  docker://4f30404e84992da1d83c069bbcc925fd509a18600c9f7fa75415e749d3936340
+
+    Image:         ubuntu:latest
+
+    Image ID:      docker-pullable://ubuntu@sha256:b3e2e47d016c08b3396b5ebe06ab0b711c34e7f37b98c9d37abe794b71cea0a2
+
+    Port:          <none>
+
+    Host Port:     <none>
+
+    Command:
+
+      /bin/bash
+
+      -c
+
+      while true; do cat /var/log/nginx/access.log /var/log/nginx/error.log; sleep 30; done
+
+    State:          Running
+
+      Started:      Thu, 15 Jul 2021 14:04:14 +0000
+
+    Ready:          True
+
+    Restart Count:  0
+
+    Environment:    <none>
+
+    Mounts:
+
+      /var/log/nginx from shared-logs (rw)
+
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-ffr4n (ro)
+
+Conditions:
+
+  Type              Status
+
+  Initialized       True
+
+  Ready             True
+
+  ContainersReady   True
+
+  PodScheduled      True
+
+Volumes:
+
+  shared-logs:
+
+    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+
+    Medium:    
+
+    SizeLimit:  <unset>
+
+  default-token-ffr4n:
+
+    Type:        Secret (a volume populated by a Secret)
+
+    SecretName:  default-token-ffr4n
+
+    Optional:    false
+
+QoS Class:       BestEffort
+
+Node-Selectors:  <none>
+
+Tolerations:     node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+
+                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+
+Events:
+
+  Type    Reason     Age    From               Message
+
+  ----    ------     ----   ----               -------
+
+  Normal  Scheduled  2m16s  default-scheduler  Successfully assigned default/webserver to node01
+
+  Normal  Pulling    2m14s  kubelet            Pulling image "nginx:latest"
+
+  Normal  Pulled     2m9s   kubelet            Successfully pulled image "nginx:latest" in 4.949468199s
+
+  Normal  Created    2m8s   kubelet            Created container nginx-container
+
+  Normal  Started    2m8s   kubelet            Started container nginx-container
+
+  Normal  Pulling    2m8s   kubelet            Pulling image "ubuntu:latest"
+
+  Normal  Pulled     2m5s   kubelet            Successfully pulled image "ubuntu:latest" in 2.950736172s
+
+  Normal  Created    2m5s   kubelet            Created container sidecar-container
+
+  Normal  Started    2m5s   kubelet            Started container sidecar-container
+
+thor@jump_host /$

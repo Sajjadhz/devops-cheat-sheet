@@ -1,0 +1,100 @@
+## Linux NTP Setup
+
+### Question :  
+The system admin team of xFusionCorp Industries has noticed an issue with some servers in Stratos Datacenter where some of the servers are not in sync w.r.t time. Because of this, several application functionalities have been impacted. To fix this issue the team has started using common/standard NTP servers. They are finished with most of the servers except App Server 1. Therefore, perform the following tasks on this server:
+
+Install and configure NTP server on App Server 1.
+
+Add NTP server 1.sg.pool.ntp.org in NTP configuration on App Server 1.
+
+Please do not try to start/restart/stop ntp service, as we already have a restart for this service scheduled for tonight and we don't want these changes to be applied right now.
+
+### Solution:  
+1. At first login on App server   &  Switch to  root user 
+
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+2. Check NTP is installed , if not then install on the server 
+
+```
+rpm -qa |grep ntp
+
+yum install -y ntp
+```
+3. Confirm package install successfully
+```
+rpm -qa |grep ntp
+
+ntp-4.2.6p5-29.el7.centos.2.x86_64
+
+ntpdate-4.2.6p5-29.el7.centos.2.x86_64
+
+```
+ 4. Add NTP server in configuration file 
+``` 
+vi /etc/ntp.conf
+cat /etc/ntp.conf |grep sg.pool
+
+server 1.sg.pool.ntp.org
+```
+
+ 
+
+5. Check NTP daemon status  
+```
+ntpstat
+
+Unable to talk to NTP daemon. Is it running?
+
+systemctl status ntpd
+
+● ntpd.service - Network Time Service
+
+   Loaded: loaded (/usr/lib/systemd/system/ntpd.service; disabled; vendor preset: disabled)
+
+   Active: inactive (dead)
+```
+
+6. Start NTP daemon enable and check the status 
+```
+systemctl enable ntpd
+
+Created symlink from /etc/systemd/system/multi-user.target.wants/ntpd.service to /usr/lib/systemd/system/ntpd.service.
+
+systemctl start  ntpd
+
+systemctl status ntpd
+
+● ntpd.service - Network Time Service
+
+   Loaded: loaded (/usr/lib/systemd/system/ntpd.service; enabled; vendor preset: disabled)
+
+   Active: active (running) since Sun 2021-06-20 10:40:05 UTC; 4s ago
+
+  Process: 1151 ExecStart=/usr/sbin/ntpd -u ntp:ntp $OPTIONS (code=exited, status=0/SUCCESS)
+
+ Main PID: 1152 (ntpd)
+
+   CGroup: /docker/dc4d87bd2c999a9987e26698b929f742c010e3ec3a5e69c4c92a08017662753a/system.slice/ntpd.service
+
+           └─1152 /usr/sbin/ntpd -u ntp:ntp -g 
+
+Hint: Some lines were ellipsized, use -l to show in full.
+
+```
+ 
+
+7. Validate the task by NTP status 
+```
+ntpstat
+
+synchronised to NTP server (66.85.78.80) at stratum 3
+
+   time correct to within 235 ms
+
+   polling server every 64 s
+```
+

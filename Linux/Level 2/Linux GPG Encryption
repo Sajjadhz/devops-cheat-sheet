@@ -1,0 +1,59 @@
+## Linux GPG Encryption
+
+### Question : 
+We have confidential data that needs to be transferred to a remote location, so we need to encrypt that data.We also need to decrypt data we received from a remote location in order to understand its content.
+
+On storage server in Stratos Datacenter we have private and public keys stored /home/*_key.asc. Use those keys to perform the following actions.
+
+Encrypt /home/encrypt_me.txt to /home/encrypted_me.asc.
+
+Decrypt /home/decrypt_me.asc to /home/decrypted_me.txt. (Passphrase for decryption and encryption is kodekloud).
+
+### Solution:  
+1. Login on storage server & switch to root user
+```sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+2.  All files located in /home 
+`cd /home/`
+3.  Import gpg Private & Public key 
+
+
+`gpg --import public_key.asc`
+
+`gpg --import private_key.asc`
+
+4. Kindly verify keys are imported successfully
+
+`gpg --list-keys`
+
+`gpg --list-secret-keys`
+
+5. Will encrypt the file txt in to asc in same folder path 
+
+
+`gpg --encrypt -r kodekloud@kodekloud.com --armor < encrypt_me.txt  -o encrypted_me.asc`
+
+6. Will decrypt the file asc in to txt  using passphrase within same folder path 
+
+
+`gpg --decrypt decrypt_me.asc > decrypted_me.txt`
+
+7. check the encrpyted & decrypted files  in  /home
+
+`ls -l`
+
+8.  Validate the task by cat the files output
+
+
+```
+cat decrypted_me.txt
+
+cat decrypt_me.asc
+
+cat encrypt_me.txt
+
+cat encrypted_me.asc
+```
+

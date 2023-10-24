@@ -1,0 +1,3 @@
+## Cron schedule deny to users
+
+Put usernames in /etc/cron.allow and /etc/cron.deny to allow or deny the user.

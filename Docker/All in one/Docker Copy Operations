@@ -1,0 +1,29 @@
+## Docker Copy Operations
+
+### Question : 
+The Nautilus DevOps team has some conditional data present on App Server 2 in Stratos Datacenter. There is a container ubuntu_latest running on the same server. We received a request to copy some of the data from the docker host to the container. Below are more details about the task:
+
+On App Server 2 in Stratos Datacenter copy an encrypted file /tmp/nautilus.txt.gpg from docker host to ubuntu_latest container (running on same server) in /usr/src/ location. Please do not try to modify this file in any way.
+
+### Solution:  
+
+
+ 1. At first login on app server  as per the task & Switch to  root user 
+ ```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+
+2. Run Below command to check existing docker container running     
+
+`docker ps`
+
+3. Copy an encrypted file /tmp/nautilus.txt.gpg on docker container ubuntu_latest
+     
+`docker cp /tmp/nautilus.txt.gpg ubuntu_latest:/usr/src`
+
+4. Validate the task by running the command
+
+`docker exec ubuntu_latest  ls -ltr /usr/src`
+

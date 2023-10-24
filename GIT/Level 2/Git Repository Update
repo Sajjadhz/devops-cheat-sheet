@@ -1,0 +1,43 @@
+## Git Repository Update
+
+### Question :  
+The Nautilus development team started with new project development. They have created different search Git repositories to manage respective project's source code. One of the repo /opt/cluster.git was created recently. The team has given us a sample index.html file that is currently present on jump host under /tmp. The repository has been cloned at /usr/src/kodekloudrepos on storage server in Stratos DC.
+
+Copy sample index.html file from jump host to storage server under cloned repository at /usr/src/kodekloudrepos, add/commit the file and push to master branch.
+
+### Solution:   
+
+1.  At 1st SCP index.html file from jump server to the storage server    
+
+`sudo scp /tmp/index.html  natasha@ststor01:/tmp`
+
+2. login on storage server  & switch to root user
+```
+sshpass -p Bl@kW ssh -o StrictHostKeyChecking=no natasha@ststor01
+
+sudo su -
+```
+
+3. Go to project repositories as per the task     
+
+
+`cd   /usr/src/kodekloudrepos/cluster/`
+
+`ll`
+
+4. Copy html file from tmp to repo 
+       
+`cp /tmp/index.html  .`
+
+`ll`
+
+5.  Add and commit the index.html file  
+
+`git add index.html`
+
+`git commit -m "add index.html"`
+
+6. Finally push master branch to the origin.
+
+`git push -u origin master`
+

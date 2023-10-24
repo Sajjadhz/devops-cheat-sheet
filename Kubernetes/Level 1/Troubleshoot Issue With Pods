@@ -1,0 +1,27 @@
+## Troubleshoot Issue With Pods
+
+### Question : 
+There is a pod named webserver, the container under it named as httpd-container and it is using image httpd:latest
+
+There is a sidecar container as well named sidecar-container which is using ubuntu:latest image.
+
+
+Look into the issue and fix it, make sure pod is in running state before clicking the Finish button.
+
+Note: The kubectl utility on jump_host has been configured to work with the kubernetes cluster.
+
+### Solution:  
+1. At first  kubectl  utility configure and working from jump server, run below commands
+
+`kubectl get pods`
+
+2. To identify the error run below command 
+`kubectl describe pod webserver`
+
+3.  To resolve the images issue edit the pod and do the changes
+     
+`kubectl edit pod webserver`    
+
+4.  Wait for  pods to get running status
+
+`kubectl get pods`

@@ -1,0 +1,36 @@
+## Install Ansible
+
+### Question :  
+During their weekly meeting, the Nautilus DevOps team developed automation and configuration management solutions that they want to implement. While considering several options, the team has decided to go with Ansible for now due to its simple setup and minimal pre-requisites. The team wanted to start testing with Ansible, so they have decided to use jump host as an Ansible controller to test different kinds of tasks on the rest of the servers.
+
+Install ansible version 2.6.10 on Jump host.
+
+Solution:  
+1. Switch to Root user on jump server
+
+`sudo su -`
+
+2. To Install specific ansible version, required ansible repo 
+
+`vi /etc/yum.repos.d/ansible.repo`
+```
+[ansible]
+
+name=Ansible RPM repository for Enterprise Linux 7 - $basearch
+
+baseurl=https://releases.ansible.com/ansible/rpm/release/epel-7-$basearch/
+
+enabled=1
+
+gpgcheck=1
+
+gpgkey=https://releases.ansible.com/keys/RPM-GPG-KEY-ansible-release.pub
+
+```
+
+3. To Install Ansible run below commands
+
+`yum install ansible 2.6.10` 
+
+4. Validate the ansible version. 
+       ansible --version

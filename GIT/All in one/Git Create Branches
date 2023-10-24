@@ -1,0 +1,44 @@
+## Git Create Branches
+
+### Question:  
+Nautilus developers are actively working on one of the project repositories, /usr/src/kodekloudrepos/official. They recently decided to implement some new features in the application, and they want to maintain those new changes in a separate branch. Below are the requirements that have been shared with the DevOps team:
+
+On Storage server in Stratos DC create a new branch xfusioncorp_official from master branch in /usr/src/kodekloudrepos/official git repo.
+
+Please do not try to make any changes in code.
+
+### Solution:   
+
+1. Login on storage server  & Switch Root user  
+```
+sshpass -p Bl@kW ssh -o StrictHostKeyChecking=no natasha@ststor01
+
+sudo su -
+```
+
+2. go to project repositories given in the task
+
+
+`cd /usr/src/kodekloudrepos/official`
+
+`ll`
+3. Checkout  to master, since its need to create a new branch from master
+
+`git checkout master`
+  
+4. Create a new branch from master as per the task
+
+`git checkout -b xfusioncorp_official`
+
+`git status`
+```
+# On branch xfusioncorp_official
+
+nothing to commit, working directory clean
+
+[root@ststor01 official]#
+```
+
+5. validate the task by running
+    
+`git branch -a`

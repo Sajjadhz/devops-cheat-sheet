@@ -1,0 +1,95 @@
+## Linux TimeZones Setting
+
+### Question :   
+During the daily standup, it was pointed out that the timezone across Nautilus Application Servers in Stratos Datacenter doesn't match with that of the local datacenter's timezone, which is America/Blanc-Sablon.
+
+### Solution:  
+1. At first login on App server   &  Switch to  root user 
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+
+2. Run Below command to  check existing Time Zone set for server
+
+`timedatectl`
+```
+Local time: Sat 2021-06-12 15:22:41 UTC
+
+Universal time: Sat 2021-06-12 15:22:41 UTC
+
+RTC time: n/a
+
+
+Time zone: UTC (UTC, +0000)
+
+NTP enabled: n/a
+
+NTP synchronized: yes
+
+RTC in local TZ: no
+
+DST active: n/a
+```
+3. Help give you syntax to set the time zone & others
+
+`timedatectl -h`
+```
+timedatectl [OPTIONS...] COMMAND ... 
+
+Query or change system time and date settings.
+
+ 
+
+  -h --help                Show this help message
+
+     --version             Show package version
+
+     --no-pager            Do not pipe output into a pager
+
+     --no-ask-password     Do not prompt for password
+
+  -H --host=[USER@]HOST    Operate on remote host
+
+  -M --machine=CONTAINER   Operate on local container
+
+     --adjust-system-clock Adjust system clock when changing local RTC mode 
+
+Commands:
+
+  status                   Show current time settings
+
+  set-time TIME            Set system time
+
+  set-timezone ZONE        Set system time zone
+
+  list-timezones           Show known time zones
+
+  set-local-rtc BOOL       Control whether RTC is in local time
+
+  set-ntp BOOL             Control whether NTP is enabled
+```
+
+4. Run Below command to set the time zone  & verify it 
+
+`timedatectl set-timezone America/Blanc-Sablon`
+
+`timedatectl`
+```
+Local time: Sat 2021-06-12 11:25:38 AST
+
+Universal time: Sat 2021-06-12 15:25:38 UTC
+
+RTC time: n/a
+
+Time zone: America/Blanc-Sablon (AST, -0400)
+
+NTP enabled: n/a
+
+NTP synchronized: yes
+
+RTC in local TZ: no
+
+DST active: n/a
+```

@@ -1,0 +1,148 @@
+## Jenkins Multi Stage Pipeline
+
+### Question : 
+The development team of xFusionCorp Industries is working on to develop a new static website and they are planning to deploy the same on Nautilus App Servers using Jenkins pipeline. They have shared their requirements with the DevOps team and accordingly we need to create a Jenkins pipeline job. Please find below more details about the task:
+
+Click on the + button in the top left corner and select option Select port to view on Host 1, enter port 8081 and click on Display Port. You should be able to access the Jenkins login page. Login using username theadmin and Adm!n321 password.
+
+In the same way you can access Gitea UI on port 8000; username and password for Git is sarah and Sarah_pass123 respectively. There under user sarah you will find a repository named web that is already cloned on Storage server under /home/sarah/web. sarah is a developer who is working on this repository.
+
+
+We have already cloned repository on Storage Server under /home/sarah/web. Update the content of the file index.html under the same repository to Welcome to xFusionCorp Industries and push the changes to the origin into master branch.
+
+Apache is already installed on all app Servers its running on port 8080.
+
+Create a Jenkins pipeline job named deploy-job (it must not be a Multibranch pipeline job) and pipeline should have two stages Deploy and Test ( which is case sensitive ). Configure these stages as per details mentioned below.
+
+a. The Deploy stage should deploy the code from web repository under /data on Storage Server, as this location is already mounted to the document root /var/www/html of all app servers.
+
+b. The Test stage should test your latest changes if deployed correctly. Its up to you how you design this stage to test your changes, you can simply add a curl command as well to run a curl against the LBR URL to see if your latest pushed changes are visible on the website. Make sure this stage fails in case the changes mentioned in this question aren't deployed correctly or if Deploy stage fails.
+
+
+LB server is already configured. Click on the + button in the top left corner and select option Select port to view on Host 1, enter port 80 and click on Display Port. You should be able to see the latest changes you made. Please make sure the required content is loading on the main URL https://<LBR-URL> i.e there should not be a sub-directory like https://<LBR-URL>/web etc.
+
+Note:
+
+You might need to install some plugins and restart Jenkins service. So, we recommend clicking on Restart Jenkins when installation is complete and no jobs are running on plugin installation/update page i.e update centre. Also, Jenkins UI sometimes gets stuck when Jenkins service restarts in the back end. In this case, please make sure to refresh the UI page.
+
+For these kind of scenarios requiring changes to be done in a web UI, please take screenshots so that you can share it with us for review in case your task is marked incomplete. You may also consider using a screen recording software such as loom.com to record and share your work.
+
+### Solution: 
+
+1. Click on the + button in the top left corner and select option Select port to view on Host 1, enter port 8081 and click on Display Port. You should be able to access the Jenkins login page. Login using username theadmin and Adm!n321 password.
+
+2. Click Jenkins > Manage Jenkins > Manage Plugins and click Available tab.
+
+Search for Pipeline Git, SSH  plugin and click Download now and install after restart
+
+3. Setup Credentials for GIT user sarah
+
+4. Create a  new Pipeline Job
+
+5. Kindly change git url under Deploy stage and app server ports as per the task
+```
+//
+
+// Setup up the Remote connection for SSH Build Pipeline step
+
+//
+
+def remote = [:]
+
+remote.name = 'ststor01'
+
+remote.host = 'ststor01'
+
+remote.user = 'natasha'
+
+remote.password = 'Bl@kW'
+
+remote.allowAnyHosts = true             
+
+pipeline {
+
+    // Run on agent with label 'ststor01'
+
+    agent { label 'ststor01' }
+
+    // Pipeline stages 
+
+    stages {
+
+        // Deploy stage
+
+        stage('Deploy') {
+
+            steps {
+
+                echo 'Deploying ...'
+
+                // Connect to GIT and download the repo code
+
+                // Use the Jenkins Credentials by ID: GIT_CREDS
+
+                git credentialsId: 'GIT_CREDS', url: 'http://git.stratos.xfusioncorp.com/sarah/web.git'
+
+                // Transfer all the files we downloaded to /tmp of ststor01
+
+                sshPut remote: remote, from: '.', into: '/tmp'
+
+                // Finally move all the files from /tmp to /data on ststor01
+
+                sshCommand remote: remote, command: "mv -f /tmp/${JOB_NAME}/* /data"
+
+            }
+
+        }
+
+        // Test stage
+
+        stage('Test') {
+
+            environment {
+
+                // Update the below value as per the text given in question
+
+                INDEX_CONTENT = 'Welcome to xFusionCorp Industries'
+
+            }
+
+            steps {
+
+                // Now test that the content from default page from HTTPD on each 
+
+                // appservers is same as the index.html content required as
+
+                sh '((curl http://stapp01:8080/ | grep -F "$INDEX_CONTENT") && true)'
+
+                sh '((curl http://stapp02:8080/ | grep -F "$INDEX_CONTENT") && true)'
+
+                sh '((curl http://stapp03:8080/ | grep -F "$INDEX_CONTENT") && true)'
+
+            }
+
+        }
+
+    }
+
+}
+```
+6.  Login on Storage Server & Commit changes to index.html
+
+`ssh sarah@ststor01`
+
+`cd /home/sarah/web/`
+
+`ll`
+
+`vi index.html`
+
+`cat index.html`
+
+`git add`
+
+`git add .`
+
+`git commit -m " update"`
+
+7.  Validate the task by running build job in newly created Pipeline & Check console output

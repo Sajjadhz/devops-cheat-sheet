@@ -1,0 +1,15 @@
+## Docker Python App
+
+### 
+
+```
+cat > Dockerfile <<EOF
+FROM python:3.8-alpine
+WORKDIR /app
+COPY src/* /app
+RUN pip3 install -r requirements.txt
+EXPOSE 8082
+COPY src/server.py .
+CMD ["python", "server.py"]
+EOF
+```

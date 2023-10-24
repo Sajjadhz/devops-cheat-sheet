@@ -1,0 +1,56 @@
+## Linux Postfix Troubleshooting
+
+### Question : 
+Some users of the monitoring app have reported issues with xFusionCorp Industries mail server. They have a mail server in Stork DC where they are using postfix mail transfer agent. Postfix service seems to fail. Try to identify the root cause and fix it.
+
+Please Note :-  Perform the below commands based on your question  server,  user name & other details might differ . So please read task carefully before executing. All the Best 👍
+
+### Solution:  
+1. Login on   Mail  server as per the task and switch root user
+```
+sshpass -p Gr00T123 ssh -o StrictHostKeyChecking=no groot@stmail01
+
+sudo su -
+```
+2. Start postfix service , check status with -l for details error output 
+```
+systemctl start postfix
+
+systemctl status postfix -l
+```
+3. As we identify the issue in configuration file edit and do the changes
+
+`cat /etc/postfix/main.cf |grep inet_interface`
+`vi /etc/postfix/main.cf`
+
+`cat /etc/postfix/main.cf |grep inet_interface`
+```
+# The inet_interfaces parameter specifies the network interface
+
+inet_interfaces = all
+
+#inet_interfaces = $myhostname
+
+#inet_interfaces = $myhostname, localhost
+
+#inet_interfaces = localhost
+
+# the address list specified with the inet_interfaces parameter.
+
+# receives mail on (see the inet_interfaces parameter).
+
+# to $mydestination, $inet_interfaces or $proxy_interfaces.
+
+# - destinations that match $inet_interfaces or $proxy_interfaces,
+
+# unknown@[$inet_interfaces] or unknown@[$proxy_interfaces] is returned
+```
+4. Post configuration saved start the services and check the status 
+```
+systemctl start postfix
+
+systemctl status postfix
+```
+5. validate the task by telnet the port 25 
+
+`telnet stmail01 25`

@@ -1,0 +1,50 @@
+## Save Load and Transfer Docker Image
+
+### Question : 
+One of the DevOps team members was working on to create a new custom docker image on App Server 1 in Stratos DC. He is done with his changes and image is saved on same server with name games:devops. Recently a requirement has been raised by a team to use that image for testing, but the team wants to test the same on App Server 3. So we need to provide them that image on App Server 3 in Stratos DC.
+
+a. On App Server 1 save the image games:devops in an archive.
+
+b. Transfer the image archive to App Server 3.
+
+c. Load that image archive on App Server 3 with same name and tag which was used on App Server 1.
+
+Note: Docker is already installed on both servers; however, if its service is down please make sure to start it.
+
+### Solution:  
+1. Login on   App server as per the task
+
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+
+2. List the existing images in docker which need to archive
+
+`docker images`
+
+3. save the image games:devops in an archive 
+
+`docker save -o /tmp/games.tar games:devops`
+
+`ll /tmp/`
+4. Copy the tar file on Stapp03 app server 
+
+`scp /tmp/games.tar banner@stapp03:/tmp`
+5. Login on  Stapp03 app server & switch to root user
+```
+sshpass -p BigGr33n ssh -o StrictHostKeyChecking=no banner@stapp03
+
+sudo su -
+```
+6. Go to tmp folder and confirm the tar file copied successfully 
+`ll /tmp/`
+
+7. Start Docker service if its not active
+`systemctl start docker`
+`systemctl status docker`
+8. Load that image archive 
+`docker load -i games.tar`
+9. Validate the task by docker images
+`docker images`

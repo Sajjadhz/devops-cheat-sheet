@@ -1,0 +1,60 @@
+## Write a Docker File
+
+### Question : 
+As per recent requirements shared by the Nautilus application development team, they need custom images created for one of their projects. Several of the initial testing requirements are already been shared with DevOps team. Therefore, create a docker file /opt/docker/Dockerfile (please keep D capital of Dockerfile) on App server 1 in Stratos DC and configure to build an image with the following requirements:
+
+a. Use ubuntu as the base image.
+
+b. Install apache2 and configure it to work on 8081 port. (do not update any other Apache configuration settings like document root etc).
+
+### Solution:  
+
+1. At first login on app server as per the task & switch to root user
+
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+
+2. Run the Below command to check existing docker images 
+
+`docker ps`
+
+`docker images`
+
+3. Write a  Vi Dockerfile  in folder /opt/docker
+
+```
+cat > /opt/docker/Dockerfile <<EOF
+FROM ubuntu
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update
+
+RUN apt-get install apache2 -y
+
+RUN sed -i "s/80/8081/g" /etc/apache2/ports.conf
+
+EXPOSE 8081
+
+CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND", "-k", "start"]
+EOF
+```
+
+4. Run Build command to  create an image
+ 
+`cd /opt/docker/`
+
+`docker build  -t apache2 .`
+
+5. Run the Below command to  run the docker container on the server
+
+`docker run --name http -p 8081:8081 -d apache2`
+
+6.  Validate the task by docker ps  &   curl 
+
+`docker ps`
+
+`curl -Ik http://localhost:8081`

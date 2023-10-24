@@ -1,0 +1,25 @@
+## Create HTTPD Deployment in Kubernetes Cluster | Labels
+
+### Question :  
+The Nautilus DevOps team has started practicing some pods, and services deployment on Kubernetes platform, as they are planning to migrate most of their applications on Kubernetes. Recently one of the team members has been assigned a task to create a deploymnt as per details mentioned below:
+
+Create a deployment named httpd to deploy the application httpd using the image httpd:latest (remember to mention the tag as well)
+
+Note: The kubectl utility on jump_host has been configured to work with the kubernetes cluster.
+
+### Solution:
+
+1. At first  kubectl  utility configure and working from jump server, run below commands  
+
+`kubectl get deploy`
+`kubectl get namespace`
+
+2.  Create deploy & and run image as per the task request
+
+`kubectl create deploy httpd --image httpd:latest`
+
+3.  Validate the task by running below commands    
+
+`kubectl get deploy`
+`kubectl get pods`
+`kubectl describe pod httpd-84898796c-k2gzt`

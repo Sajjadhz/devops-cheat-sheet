@@ -1,0 +1,194 @@
+## Environment Variables in Kubernetes
+
+### Question : 
+There are a number of parameters that are used by applications. We need to define these as environment variables so that we can use them as needed within different configs. Below is a scenario which needs to be configured on Kubernetes cluster. Please find below more details about it.
+
+Create a namespace named as fieldref-namespace.
+
+Create a pod named envars-fieldref under the namespace fieldref-namespace.
+
+Configure spec as the container name should be fieldref-container, use image httpd preferable latest tag, use command 'sh', '-c' and args should be
+
+'while true; do echo -en '/n'; printenv NODE_NAME POD_NAME POD_NAMESPACE; printenv POD_IP POD_SERVICE_ACCOUNT; sleep 10; done;'
+
+(Note: please take care of indentations)
+
+Define five environment variables as mentioned below:
+
+a.) The first env should be named as NODE_NAME, set valueFrom fieldref and fieldPath should be spec.nodeName.
+
+
+b.) The second env should be named as POD_NAME, set valueFrom fieldref and fieldPath should be metadata.name.
+
+
+c.) The third env should be named as POD_NAMESPACE, set valueFrom fieldref and fieldPath should be metadata.namespace.
+
+d.) The fourth env should be named as POD_IP, set valueFrom fieldref and fieldPath should be status.podIP.
+
+e.) The fifth env should be named as POD_SERVICE_ACCOUNT, set valueFrom fieldref and fieldPath shoulbe be spec.serviceAccountName.
+
+Set restart policy to Never.
+
+To check the output, exec the pod and use printenv command.
+
+Note: The kubectl utility on jump_host has been configured to work with the kubernetes cluster.
+
+### Solution:  
+
+1. At first  kubectl  utility configure and working from jump server, run below commands   
+
+`kubectl get namespace`
+
+`kubectl get pods`
+
+2.  Create namespace as per the task       
+
+`kubectl create namespace fieldref-namespace`
+
+`kubectl get namespace`
+
+3.  Create yaml  file with all the parameters
+
+```
+cat > /tmp/envars.yaml <<EOF
+apiVersion: v1
+
+kind: Pod
+
+metadata:
+
+  name: envars-fieldref
+
+  namespace: fieldref-namespace
+
+spec:
+
+  restartPolicy: Never
+
+  containers:
+
+    - name: fieldref-container
+
+      image: httpd:latest
+
+      command: ["sh", "-c"]
+
+      args:
+
+        - while true; do
+
+          echo -en '\n';
+
+          printenv NODE_NAME POD_NAME POD_NAMESPACE;
+
+          printenv POD_IP POD_SERVICE_ACCOUNT;
+
+          sleep 10;
+
+          done;
+
+      env:
+
+        - name: NODE_NAME
+
+          valueFrom:
+
+            fieldRef:
+
+              fieldPath: spec.nodeName
+
+        - name: POD_NAME
+
+          valueFrom:
+
+            fieldRef:
+
+              fieldPath: metadata.name
+
+        - name: POD_NAMESPACE
+
+          valueFrom:
+
+            fieldRef:
+
+              fieldPath: metadata.namespace
+
+        - name: POD_IP
+
+          valueFrom:
+
+            fieldRef:
+
+              fieldPath: status.podIP
+
+        - name: POD_SERVICE_ACCOUNT
+
+          valueFrom:
+
+            fieldRef:
+
+              fieldPath: spec.serviceAccountName
+EOF
+```
+4.  Run below command to create pod   
+
+`kubectl create -f /tmp/envars.yaml`
+
+5. wait for the pod running status
+
+`kubectl get pods -n fieldref-namespace`
+
+6. Validate the task by login on pod and run printenv
+      
+`kubectl exec -it envars-fieldref  -n fieldref-namespace  -- /bin/bash`
+
+`printenv`
+```
+KUBERNETES_SERVICE_PORT_HTTPS=443
+
+KUBERNETES_SERVICE_PORT=443
+
+HOSTNAME=envars-fieldref
+
+POD_NAME=envars-fieldref
+
+POD_NAMESPACE=fieldref-namespace
+
+PWD=/usr/local/apache2
+
+HTTPD_VERSION=2.4.48
+
+HOME=/root
+
+KUBERNETES_PORT_443_TCP=tcp://10.96.0.1:443
+
+HTTPD_PATCHES=
+
+TERM=xterm
+
+NODE_NAME=node01
+
+HTTPD_SHA256=1bc826e7b2e88108c7e4bf43c026636f77a41d849cfb667aa7b5c0b86dbf966c
+
+SHLVL=1
+
+KUBERNETES_PORT_443_TCP_PROTO=tcp
+
+KUBERNETES_PORT_443_TCP_ADDR=10.96.0.1
+
+POD_IP=10.244.1.2
+
+KUBERNETES_SERVICE_HOST=10.96.0.1
+
+KUBERNETES_PORT=tcp://10.96.0.1:443
+
+KUBERNETES_PORT_443_TCP_PORT=443
+
+PATH=/usr/local/apache2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+POD_SERVICE_ACCOUNT=default
+
+HTTPD_PREFIX=/usr/local/apache2
+
+_=/usr/bin/printenv
+```

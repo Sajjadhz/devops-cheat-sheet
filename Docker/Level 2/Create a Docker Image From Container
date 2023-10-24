@@ -1,0 +1,31 @@
+## Create a Docker Image From Container
+
+### Question: 
+One of the Nautilus developer was working to test new changes on a container. He wants to keep a backup of his changes to the container. A new request has been raised for the DevOps team to create a new image from this container. Below are more details about it:
+
+a. Create an image media:datacenter on Application Server 2 from a container ubuntu_latest that is running on same server.
+
+### Solution:  
+
+1. Login on app server & Switch to  root user
+```
+sshpass -p Am3ric@ ssh -o StrictHostKeyChecking=no steve@stapp02
+
+sudo su -
+```
+
+2. Check existing docker container ubuntu_latest running status 
+
+`docker ps`
+
+3. Look at the list of images on your system
+
+`docker images`
+
+4. Create a new image from this container as per the task 
+
+`docker commit ubuntu_latest media:datacenter`
+
+5. Validate the task by running 
+
+`docker images`

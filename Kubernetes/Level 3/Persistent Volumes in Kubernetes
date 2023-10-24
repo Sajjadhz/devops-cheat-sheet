@@ -1,0 +1,77 @@
+## Persistent Volumes in Kubernetes
+
+### Question : 
+We already created a directory /mnt/dba and a file index.html under the same on node01 (you need not to access node01), that location should be mounted within the container to web server's document root (keep in mind doc root can be different for Apache and Nginx web servers).
+
+Create a PersistentVolume named as pv-nautilus. Configure the spec as storage class should be manual, set capacity to 7Gi, set access mode to ReadWriteOnce , volume type should be hostPath and set path to /mnt/dba.
+
+Create a PersistentVolumeClaim named as pvc-nautilus. Configure the spec as storage class should be manual, set request storage to 4Gi, set access mode to ReadWriteOnce.
+
+Create a pod named as pod-nautilus, set volume as storage-nautilus, and persistent volume claim to be named as pvc-nautilus. Container name should be container-nautilus, use image nginx with latest tag only and remember to mention tag i.e nginx:latest , container port should be default port 80, mount the volume to mount path to default doc root of web server and should be named storage-nautilus.
+
+### Solution:  
+1. At first  kubectl  utility configure and working from jump server, run below commands
+
+`kubectl get services`
+
+`kubectl get pods`
+
+
+2.  Create yaml  file with all the parameters 
+
+```
+cat > /tmp/pvc.yaml <<EOF
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-nautilus
+spec:
+  capacity:
+    storage: 7Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: manual
+  hostPath:
+    path: /mnt/dba
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-nautilus
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: manual
+  resources:
+    requests:
+      storage: 4Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-nautilus
+spec:
+  volumes:
+    - name: storage-nautilus
+      persistentVolumeClaim:
+        claimName: pvc-nautilus
+  containers:
+    - name: container-nautilus
+      image: nginx:latest
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - name: storage-nautilus
+          mountPath:  /usr/share/nginx/html
+EOF
+```
+
+3.  Run below command to create pod
+
+`kubectl create -f /tmp/pvc.yaml`
+
+
+
+4.  Wait for  pods to get running status
+`kubectl get pods`

@@ -1,0 +1,29 @@
+## Linux Services Troubleshooting KodeKloud Engineer Task Success
+
+### Question :   
+Install squid package in all app servers and enabled app servers also
+
+### Solution:  
+1. At first login on storage server  
+
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+
+2. Run Below command to install IPtables service 
+
+    `yum install  -y squid`
+3. Start & enable the squid service below commands
+
+    `systemctl start squid` 
+
+    `systemctl enable squid`
+
+
+
+
+
+4. Validate the squid service status   
+`systemctl status squid` 

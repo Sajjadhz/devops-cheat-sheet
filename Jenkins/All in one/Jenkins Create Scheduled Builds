@@ -1,0 +1,59 @@
+## Jenkins Create Scheduled Builds
+
+### Question : 
+The devops team of xFusionCorp Industries is working on to setup centralised logging management to maintain and analyse server logs easily. Since it will take some time to implement, they wanted to gather some server logs on a regular basis. At least one of the app servers is having issues with the Apache server. The team needs Apache logs so that they can identify and troubleshoot the issues easily if they arise. So they decided to create a Jenkins job to collect logs from the server. Please create/configure a Jenkins job as per details mentioned below:
+
+Click on the + button in the top left corner and select option Select port to view on Host 1, enter port 8081 and click on Display Port. You should be able to access the Jenkins login page. Login using username theadmin and Adm!n321 password.
+
+Create a Jenkins jobs named copy-logs.
+
+Configure it to periodically build every 9 minutes to copy the Apache logs (both access_log and error_logs) from App Server 2 (from default logs location) to location /usr/src/data on Storage Server.
+
+Note:
+
+You might need to install some plugins and restart Jenkins service. So, we recommend clicking on Restart Jenkins when installation is complete and no jobs are running on plugin installation/update page i.e update centre. Also, Jenkins UI sometimes gets stuck when Jenkins service restarts in the back end. In this case please make sure to refresh the UI page.
+
+Please make sure to define you cron expression like this */10 * * * * (this is just an example to run job every 10 minutes).
+
+
+For these kind of scenarios requiring changes to be done in a web UI, please take screenshots so that you can share it with us for review in case your task is marked incomplete. You may also consider using a screen recording software such as loom.com to record and share your work.
+
+### Solution: 
+
+1. Click on the + button in the top left corner and select option Select port to view on Host 1, enter port 8081 and click on Display Port. You should be able to access the Jenkins login page. Login using username theadmin and Adm!n321 password.
+
+2. Click Jenkins > Manage Jenkins > Manage Plugins and click Available tab.
+
+Search for SSH  plugin and click Download now and install after restart
+
+3. Setup Credentials for SSH users for server given in task
+Under Jenkins > Manage Jenkins > Manage Credentials, click Global under Stores scoped to Jenkins and Add Credentials
+
+4.  Add SSH Hosts in Jenkins
+
+5. Create a Scheduled Build Job as per the task set name
+
+Click New item
+
+6. Under Build Triggers, select Build Periodically and provide the Schedule as per the question. In this example, the job is configured to run every 11 minutes:
+
+7. Now, under Build, add a Build Step with Execute shell script on remote host using SSH and under SSH Site select banner@stapp03:22
+
+
+Use this script according to the task change folder path  & app server username
+
+```
+echo Am3ric@ | sudo -S yum install sshpass -y
+
+echo Am3ric@ | sudo -S sshpass -p Bl@kW scp -o StrictHostKeyChecking=no -r /etc/httpd/logs/access_log natasha@ststor01:/usr/src/sysops
+
+echo Am3ric@ | sudo -S sshpass -p Bl@kW scp -o StrictHostKeyChecking=no -r /etc/httpd/logs/error_log natasha@ststor01:/usr/src/sysops
+```
+
+8. Validate  Job success  & login on storage server ,  check logs files
+
+```
+ssh natasha@ststor01
+
+ll /usr/src/data
+```

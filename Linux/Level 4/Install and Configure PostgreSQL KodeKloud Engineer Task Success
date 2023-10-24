@@ -1,0 +1,121 @@
+## Install and Configure PostgreSQL KodeKloud Engineer Task Success
+
+### Question :  
+The Nautilus application development team has shared that they are planning to deploy one newly developed application on Nautilus infra in Stratos DC. The application uses search PostgreSQL database, so as a pre-requisite we need to set up search PostgreSQL database server as per requirements shared below:
+
+a. Install and configure PostgreSQL database on Nautilus database server.
+
+b. Create a database user kodekloud_top and set its password to TmPcZjtRQx.
+
+c. Create a database kodekloud_db7 and grant full permissions to user kodekloud_top on this database.
+
+d. Make appropriate settings to allow all local clients (local socket connections) to connect to the kodekloud_db7 database through kodekloud_top user using md5 method (Please do not try to encrypt password with md5sum).
+
+e. At the end its good to test the db connection using these new credentials from root user or server's sudo user.
+
+
+### Solution:  
+
+1. At first login  to the database server & Switch to the root user 
+
+```
+sshpass -p Sp!dy ssh -o StrictHostKeyChecking=no peter@stdb01
+
+sudo su -
+```
+
+2. Install PostgreSQL 
+
+
+`yum -y install postgresql-server postgresql-contrib
+
+3. Post installation Initiate DB setup   
+
+`postgresql-setup initdb`
+
+4. Enable, start & check the status of the service 
+
+`systemctl enable postgresql`
+`systemctl start postgresql`
+`systemctl status postgresql`
+
+5.  Now login to the Postgres  & Create user, database, and grant permission
+
+  CREATE USER <user_asper_your task> WITH PASSWORD '<password_asper_your task>';
+
+ CREATE DATABASE <DB_asper_your task>;
+
+  GRANT ALL PRIVILEGES ON DATABASE "<DB_asper_your task>" to <user_asper_your task>;  
+
+```
+sudo -u postgres psql
+
+could not change directory to "/root"
+
+psql (9.2.24)
+
+Type "help" for help.
+
+ 
+
+postgres=# CREATE USER kodekloud_top WITH PASSWORD 'TmPcZjtRQx';
+
+CREATE ROLE
+
+postgres=# CREATE DATABASE kodekloud_db7;
+
+CREATE DATABASE
+
+postgres=# GRANT ALL PRIVILEGES ON DATABASE "kodekloud_db7" to kodekloud_top;
+
+GRANT
+
+postgres=# \q
+```
+
+6.Edit postgresql.conf  &  do the below configuration changes uncomment 
+
+```
+vi /var/lib/pgsql/data/postgresql.conf
+
+cat /var/lib/pgsql/data/postgresql.conf |grep localhost
+
+listen_addresses = 'localhost'          # what IP address(es) to listen on;
+
+                                        # defaults to 'localhost'; use '*' for all
+```
+
+
+
+7. Edit another config file pg_hba.conf  &  configure the md5 at bottom of the config 
+```
+vi /var/lib/pgsql/data/pg_hba.conf
+
+cat /var/lib/pgsql/data/pg_hba.conf |grep md5
+
+# METHOD can be "trust", "reject", "md5", "password", "gss", "sspi",
+
+# "password" sends passwords in clear text; "md5" is preferred since
+
+local   all             all                                             md5
+
+host    all             all             127.0.0.1/32            md5
+
+host    all             all             ::1/128                    md5
+```
+8. Restart SQL service and check the status
+
+`systemctl restart postgresql`
+
+`systemctl status postgresql`
+
+9.  Validate the task by below commands
+psql -U <user_asper_your _task> -d <DB_asper_your_task> -h 127.0.0.1 -W
+
+psql -U <user_asper_your _task> -d <DB_asper_your_task> -h localhost -W
+
+`psql -U kodekloud_top -d kodekloud_db7 -h 127.0.0.1 -W`
+
+`psql -U kodekloud_top -d kodekloud_db7 -h localhost -W`
+
+

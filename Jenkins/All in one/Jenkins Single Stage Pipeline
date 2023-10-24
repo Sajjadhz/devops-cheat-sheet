@@ -1,0 +1,151 @@
+## Jenkins Single Stage Pipeline
+
+### Question : 
+The development team of xFusionCorp Industries is working on to develop a new static website and they are planning to deploy the same on Nautilus App Servers using Jenkins pipeline. They have shared their requirements with the DevOps team and accordingly we need to create a Jenkins pipeline job. Please find below more details about the task:
+
+Click on the + button in the top left corner and select option Select port to view on Host 1, enter port 8081 and click on Display Port. You should be able to access the Jenkins login page. Login using username theadmin and Adm!n321 password.
+
+In the same way you can access Gitea UI on port 8000; username and password for Git is sarah and Sarah_pass123 respectively. There under user sarah you will find a repository named web_app that is already cloned on Storage server under /home/sarah/web_app. sarah is a developer who is working on this repository.
+
+
+Add a slave node named Storage Server. It should be labeled as ststor01 and its remote root directory should be /home/natasha.
+
+We have already cloned repository on Storage Server under /home/sarah/web_app. Update the content of the file index.html under the same repository to Welcome to Nautilus Group! and push the changes to the origin into master branch.
+
+Apache is already installed on all app Servers its running on port 6200.
+
+Create a Jenkins pipeline job named datacenter-webapp-job (it must not be a Multibranch pipeline) and configure it to:
+
+a. Deploy the code from web_app repository under /data on Storage Server, as this location is already mounted to the document root /var/www/html of app servers. The pipeline should have a single stage named Deploy ( which is case sensitive ) to accomplish the deployment.
+
+Note:
+
+You might need to install some plugins and restart Jenkins service. So, we recommend clicking on Restart Jenkins when installation is complete and no jobs are running on plugin installation/update page i.e update centre. Also, Jenkins UI sometimes gets stuck when Jenkins service restarts in the back end. In this case, please make sure to refresh the UI page.
+
+For these kind of scenarios requiring changes to be done in a web UI, please take screenshots so that you can share it with us for review in case your task is marked incomplete. You may also consider using a screen recording software such as loom.com to record and share your work.
+
+
+LB server is already configured. Click on the + button in the top left corner and select option Select port to view on Host 1, enter port 80 and click on Display Port. You should be able to see the latest changes you made. Please make sure the required content is loading on the main URL https://<LBR-URL> i.e there should not be a sub-directory like https://<LBR-URL>/web_app etc.
+
+### Solution: 
+
+1. Click on the + button in the top left corner and select option Select port to view on Host 1, enter port 8081 and click on Display Port. You should be able to access the Jenkins login page. Login using username theadmin and Adm!n321 password.
+
+2. Click Jenkins > Manage Jenkins > Manage Plugins and click Available tab.
+
+
+Search for Pipeline Git, SSH Pipeline & SSH Build Agents  plugin and click Download now and install after restart
+
+Refresh your browser  for the login screen
+
+
+
+3. Before adding a new Slave Node as a prerequisite Java package need to be install 
+
+```
+sshpass -p Bl@kW ssh -o StrictHostKeyChecking=no natasha@ststor01
+
+sudo su -
+
+rpm -qa |grep java
+
+yum install -y java
+
+rpm -qa |grep java
+```
+
+4. Add a new slave node under Jenkins > Manage Jenkins > Manage Nodes and Clouds 
+
+5. Wait for a few seconds for the agent to be configured.  Refresh the nodes list. 
+
+6. Setup Credentials for GIT user sarah
+
+7. Create a  new Pipeline Job
+
+8. Kindly check the destination storage folder as per the task
+
+```
+def remote = [:]
+
+remote.name = 'ststor01'
+
+remote.host = 'ststor01'
+
+remote.user = 'natasha'
+
+remote.password = 'Bl@kW'
+
+remote.allowAnyHosts = true   
+
+            
+
+pipeline {
+
+    // Run on agent with label 'ststor01'
+
+    agent { label 'ststor01' }
+
+ 
+
+    // Pipeline stages
+
+    stages {
+
+        // Deploy stage 
+
+        stage('Deploy') {
+
+            steps {
+
+                // Connect to GIT and download the repo code
+
+                // Use the Jenkins Credentials by ID: GIT_CREDS
+
+                git credentialsId: 'GIT_CREDS', url: 'http://git.stratos.xfusioncorp.com/sarah/web_app.git'
+
+                // Transfer all the files we downloaded to /tmp of ststor01
+
+                sshPut remote: remote, from: '.', into: '/tmp'
+
+                // Finally move all the files from /tmp to /data on ststor01
+
+                sshCommand remote: remote, command: "mv -f /tmp/${JOB_NAME}/* /data"
+
+            }
+
+        }
+
+    }
+
+}
+```
+
+9.  Login on Storage Server & Commit changes to index.html
+
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+cd /home/sarah/web_app/
+
+ll
+
+cat index.html
+
+vi index.html
+
+cat index.html
+
+git add index.html
+
+git commit -m "update"
+
+git push origin master
+
+```
+10.  Validate the task by running build job in newly created Pipeline & Check console output
+
+`curl http://stapp01:6200`
+
+`curl http://stapp02:6200`
+
+`curl http://stapp03:6200`

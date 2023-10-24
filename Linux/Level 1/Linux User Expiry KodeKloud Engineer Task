@@ -1,0 +1,73 @@
+## Linux User Expiry KodeKloud Engineer Task
+
+### Question :  
+A developer mark has been assigned Nautilus project temporarily as a backup resource. As a temporary resource for this project, we need a temporary user for mark. It’s a good idea to create a user with a set expiration date so that the user won't be able to access servers beyond that point.
+
+Therefore, create a user named mark on the App Server 1. Set expiry date to 2021-04-15 in Stratos Datacenter. Make sure the user is created as per standard and is in lowercase.
+
+### Solution:  
+1. At first login on App server   &  Switch to  root user 
+
+```
+sshpass -p Ir0nM@n ssh -o StrictHostKeyChecking=no tony@stapp01
+
+sudo su -
+```
+
+2.  1st check user is existed on the server  by below command     
+
+`id  mark`
+```
+id: mark: no such user
+```
+
+3.  If user not found the then you create a user  as per given in your task     
+
+`adduser mark`
+
+`id  mark`
+```
+uid=1002(mark) gid=1002(mark) groups=1002(mark)
+```
+
+4.  Validate user is created successfully  with default expiry date 
+   
+`chage -l mark`
+```
+Last password change                                    : Jun 26, 2021
+
+Password expires                                        : never
+
+Password inactive                                       : never
+
+Account expires                                         : never
+
+Minimum number of days between password change          : 0
+
+Maximum number of days between password change          : 99999
+
+Number of days of warning before password expires       : 7
+```
+
+5. Run below command to change the default expires to date as per your task
+
+`chage -E 2021-04-15 mark`
+
+6. Validate changes are implemented  successfully as per the task request.
+
+`chage -l mark`
+```
+Last password change                                    : Jun 26, 2021
+
+Password expires                                        : never
+
+Password inactive                                       : never
+
+Account expires                                         : Apr 15, 2021
+
+Minimum number of days between password change          : 0
+
+Maximum number of days between password change          : 99999
+
+Number of days of warning before password expires       : 7
+```

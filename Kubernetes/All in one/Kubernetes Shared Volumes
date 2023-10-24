@@ -1,0 +1,58 @@
+## Kubernetes Shared Volumes
+
+### Question : 
+We are working on an application that will be deployed on multiple containers within a pod on Kubernetes cluster. There is a requirement to share a volume among the containers to save some temporary data. The Nautilus DevOps team is developing a similar template to replicate the scenario. Below you can find more details about it.
+
+Create a pod named volume-share-datacenter.
+
+For first container, use image centos with latest tag only and remember to mention tag i.e centos:latest, container should be named as volume-container-datacenter-1, and run a command '/bin/bash', '-c' and 'sleep 10000'. Volume volume-share should be mounted at path /tmp/news.
+
+For second container, use image centos with latest tag only and remember to mention tag i.e centos:latest, container should be named as volume-container-datacenter-2, and run a command '/bin/bash', '-c' and 'sleep 10000'. Volume volume-share should be mounted at path /tmp/cluster.
+
+
+Volumes to be named as volume-share and use emptyDir: { }.
+
+After creating pods, exec into the first container volume-container-datacenter-1, and create a file news.txt with content Welcome to xFusionCorp Industries! under the mount path of first container i.e /tmp/news.
+
+The file news.txt should be present under the mounted path /tmp/cluster of second container volume-container-datacenter-2 as they are using shared volumes.
+
+### Solution:  
+1. At first  kubectl  utility configure and working from jump server, run below commands
+
+`kubectl get services`
+
+`kubectl get pods`
+
+2.  Create yaml  file with all the parameters 
+
+```
+cat > /tmp/volume.yaml <<EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: volume-share-datacenter
+  labels:
+    name: myapp
+spec:
+  volumes:
+    - name: volume-share
+      emptyDir: {}
+  containers:
+    - name: volume-container-datacenter-1
+      image: centos:latest
+      command: ["/bin/bash", "-c", "sleep 10000"]
+      volumeMounts:
+        - name: volume-share
+          mountPath: /tmp/news
+    - name: volume-container-datacenter-2
+      image: centos:latest
+      command: ["/bin/bash", "-c", "sleep 10000"]
+      volumeMounts:
+        - name: volume-share
+          mountPath: /tmp/cluster
+EOF
+```
+
+4.  Run below command to create pod
+
+`kubectl create -f /tmp/volume.yaml`
